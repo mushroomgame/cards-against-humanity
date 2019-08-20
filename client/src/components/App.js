@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
-import Login from './views/Login';
+import Test from './views/Test';
 
 export default class App extends Component {
 	state = {}
 	render() {
 		return (
 			<div className='App'>
-				<Login />
+				<Test />
 			</div>
 		);
 	}

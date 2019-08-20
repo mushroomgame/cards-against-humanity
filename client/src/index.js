@@ -4,10 +4,10 @@ import App from './components/App';
 import './sass/style.scss';
 import * as serviceWorker from './serviceWorker';
 
-import { init } from './services/config';
+import config from './services/config';
 
 (async ()=>{
-	await init();
+	await config.init();
 	ReactDOM.render(<App />, document.getElementById('root'));
 	serviceWorker.unregister();
 })();
