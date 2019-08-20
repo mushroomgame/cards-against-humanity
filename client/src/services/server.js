@@ -5,21 +5,21 @@ whevent.debugMode = true;
 
 function connect() {
 	ws.onOpen(event => {
-		whevent.emit('$OPEN', event);
+		whevent.emit('$$OPEN', event);
 	});
 
 	ws.onMessage(event => {
 		const pack = JSON.parse(atob(event.data));
-		whevent.emit('$MESSAGE', pack);
+		whevent.emit('$$MESSAGE', pack);
 		whevent.emit(pack.signal, pack.data);
 	});
 
 	ws.onError(event => {
-		whevent.emit('$ERROR', event);
+		whevent.emit('$$ERROR', event);
 	});
 
 	ws.onClose(event => {
-		whevent.emit('$CLOSE', event);
+		whevent.emit('$$CLOSE', event);
 	});
 
 	ws.connect();
