@@ -6,6 +6,7 @@ import Login from './views/Login';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Lobby from './views/Lobby';
+import alerter from '../utils/alerter';
 
 export default class App extends Component {
 
@@ -14,11 +15,18 @@ export default class App extends Component {
 	}
 
 	componentDidMount() {
+		whevent.bind('$$CLOSE', this.onClosed, this);
 		whevent.bind('$LOGGED_IN', this.onLoggedIn, this);
 	}
 
 	componentWillUnmount() {
+		whevent.unbind('$$CLOSE', this.onClosed, this);
 		whevent.unbind('$LOGGED_IN', this.onLoggedIn, this);
+	}
+
+	onClosed(){
+		alerter.alert('与服务器失去连接!');
+		this.setState({ phase: 'LOGIN' });
 	}
 
 	onLoggedIn({ uuid, nickname }) {

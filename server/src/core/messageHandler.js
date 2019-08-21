@@ -1,5 +1,5 @@
 const whevent = require('whevent');
-const Player = require('./player');
+const Player = require('../entity/player');
 
 class MessageHandler {
 	start() {
@@ -8,8 +8,12 @@ class MessageHandler {
 
 	registerEvents() {
 		whevent.bind('$LOGIN', this.onLogin, this);
+		whevent.bind('$LOBBY', this.onRequestLobby, this);
 	}
 
+	onRequestLobby(player) {
+		
+	}
 
 	onLogin(player, { nickname }) {
 		let p = Player.getPlayerByNickname(nickname);

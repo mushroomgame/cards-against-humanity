@@ -4,7 +4,7 @@ const http = require('http');
 const express = require('express');
 const whevent = require('whevent');
 const Player = require('./entity/player');
-const MessageHandler = require('./entity/messageHandler');
+const MessageHandler = require('./core/messageHandler');
 const port = config.get('port');
 
 class Server {

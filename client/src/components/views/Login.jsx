@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import server from '../../services/server';
 import alerter from '../../utils/alerter';
 import whevent from 'whevent';
+import Button from '../common/Button';
+import Input from '../common/Input';
 
 export default class Login extends Component {
 	state = {
@@ -14,15 +16,15 @@ export default class Login extends Component {
 		whevent.bind('$$ERROR', this.onError, this);
 	}
 
-	componentWillUnmount(){
+	componentWillUnmount() {
 		whevent.unbind('$$OPEN', this.onOpen, this);
 		whevent.unbind('$$ERROR', this.onError, this);
 	}
 
 	onError(err) {
-		if(this.state.connecting) {
+		if (this.state.connecting) {
 			alerter.alert('连接服务器失败');
-			this.setState({connecting: false});
+			this.setState({ connecting: false });
 		}
 	}
 
@@ -31,18 +33,17 @@ export default class Login extends Component {
 		server.send('$LOGIN', { nickname });
 	}
 
-	onNicknameChange = ({ target }) => {
-		this.setState({ nickname: target.value })
+	onNicknameChange = nickname => {
+		this.setState({ nickname })
 	}
 
 	onClickLogin = () => {
-		let { nickname, connecting } = this.state;
-		if (connecting) return;
+		let { nickname } = this.state;
 		nickname = nickname.trim();
 		if (!nickname) {
 			alerter.alert('请输入昵称!');
 			return;
-		}else if(nickname.length > 20){
+		} else if (nickname.length > 20) {
 			alerter.alert('昵称太长了!');
 			return;
 		}
@@ -55,11 +56,8 @@ export default class Login extends Component {
 		return (
 			<section className='Login'>
 				<h1>Cards Against Humanity</h1>
-				<div className="Login-Form">
-					<label htmlFor="nickname">Nickname</label>
-					<input type="text" id="nickname" name="nickname" onChange={this.onNicknameChange} value={this.state.nickname} />
-				</div>
-				<a className={`Button Button-Login${this.state.connecting ? ' Button-Disabled' : ''}`} href="javascript:void(0)" onClick={this.onClickLogin}>Login</a>
+				<Input className="Login-Input" onChange={this.onNicknameChange} placeholder="请输入昵称" />
+				<Button backgroundColor='#fff' className="Login-Button Button-Wide" disabled={this.state.connecting} onClick={this.onClickLogin}>进入游戏</Button>
 			</section>
 		);
 	}

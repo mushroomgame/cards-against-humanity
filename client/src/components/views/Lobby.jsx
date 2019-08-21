@@ -1,12 +1,21 @@
 import React, { Component } from 'react';
+import Mask from '../common/Mask';
 
 class Lobby extends Component {
-	state = {  }
-	render() { 
-		return ( 
-			<h1>Lobby</h1>
-		 );
+	state = {
+		loading: true
+	}
+
+	render() {
+		return (
+			<React.Fragment>
+				{this.state.loading && <Mask text="获取大厅信息..." />}
+				<section className='Lobby'>
+
+				</section>
+			</React.Fragment>
+		);
 	}
 }
- 
+
 export default Lobby;
