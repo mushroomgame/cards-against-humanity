@@ -47,6 +47,8 @@ export default class App extends Component {
 							return <Login />;
 						case 'LOBBY':
 							return <Lobby />;
+						default:
+							return null;
 					}
 				})()}
 				<ToastContainer />

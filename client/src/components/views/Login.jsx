@@ -8,7 +8,8 @@ import Input from '../common/Input';
 export default class Login extends Component {
 	state = {
 		connecting: false,
-		nickname: ''
+		changed: false,
+		nickname: '游客' + Math.random().toString().substr(2, 4)
 	}
 
 	componentDidMount() {
@@ -56,7 +57,7 @@ export default class Login extends Component {
 		return (
 			<section className='Login'>
 				<h1>Cards Against Humanity</h1>
-				<Input className="Login-Input" onChange={this.onNicknameChange} placeholder="请输入昵称" />
+				<Input className="Login-Input" onChange={this.onNicknameChange} placeholder={!this.state.changed && this.state.nickname} />
 				<Button backgroundColor='#fff' className="Login-Button Button-Wide" disabled={this.state.connecting} onClick={this.onClickLogin}>进入游戏</Button>
 			</section>
 		);
