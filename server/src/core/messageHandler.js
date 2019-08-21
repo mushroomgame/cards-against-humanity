@@ -1,5 +1,6 @@
 const whevent = require('whevent');
 const Player = require('../entity/player');
+const Lobby = require('../entity/lobby');
 
 class MessageHandler {
 	start() {
@@ -12,7 +13,7 @@ class MessageHandler {
 	}
 
 	onRequestLobby(player) {
-		
+		Lobby.$.enter(player);
 	}
 
 	onLogin(player, { nickname }) {

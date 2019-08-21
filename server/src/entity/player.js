@@ -34,6 +34,9 @@ class Player {
 	}
 
 	remove() {
+		if(this.channel){
+			this.channel.leave(this);
+		}
 		players.delete(this.uuid);
 	}
 }

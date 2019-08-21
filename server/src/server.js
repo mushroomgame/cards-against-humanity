@@ -3,8 +3,12 @@ const config = require('config');
 const http = require('http');
 const express = require('express');
 const whevent = require('whevent');
-const Player = require('./entity/player');
+
 const MessageHandler = require('./core/messageHandler');
+
+const Player = require('./entity/player');
+const Lobby = require('./entity/lobby');
+
 const port = config.get('port');
 
 class Server {
@@ -27,6 +31,7 @@ class Server {
 		});
 		const messageHandler = new MessageHandler();
 		messageHandler.start();
+		new Lobby();
 		console.log(`WebSocket server is listening on port ${port}...`);
 	}
 

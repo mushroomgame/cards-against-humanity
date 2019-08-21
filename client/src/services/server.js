@@ -2,7 +2,7 @@ import ws from './core/ws';
 import whevent from 'whevent';
 import Base64 from '../utils/base64';
 
-whevent.debugMode = true;
+// whevent.debugMode = true;
 
 function connect() {
 	ws.onOpen(event => {
