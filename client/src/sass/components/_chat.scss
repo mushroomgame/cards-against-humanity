@@ -1,4 +1,94 @@
 .Chat {
 	width: 100%;
 	height: 100%;
+	display: flex;
+	flex-direction: column;
+
+	&-Logs {
+		flex: 1;
+		padding: 1rem;
+		background-color: #ddd;
+		border-radius: 0.5rem;
+		overflow-y: auto;
+	}
+
+	&-Log {
+		margin: 0;
+		display: flex;
+		flex-direction: column;
+		margin: 1rem 0;
+
+		&-Speaker {
+			font-size: 1.2rem;
+			color: #999;
+			margin-bottom: 0.5rem;
+		}
+
+		&-Message {
+			margin: 0;
+			display: block;
+		}
+
+		&-Me, &-Others {
+			.Chat-Log-Message {
+				padding: 0.5rem 1rem;
+				background-color: #fff;
+				border-radius: 1rem;
+				border: solid 1px #aaa;
+			}
+		}
+
+		&-Me {
+			.Chat-Log-Speaker {
+				text-align: right;
+			}
+	
+			.Chat-Log-Message {
+				align-self: flex-end;
+				background-color: #cfb;
+				border: solid 1px #8c7;
+				color: #465;
+			}
+		}
+
+		&-System {
+			.Chat-Log-Speaker {
+				display: none;
+			}
+	
+			.Chat-Log-Message {
+				font-size: 1.2rem;
+				align-self: center;
+				text-align: center;
+				color: #999;
+			}
+		}
+
+		&-Others {
+			.Chat-Log-Speaker {
+				text-align: left;
+			}
+	
+			.Chat-Log-Message {
+				align-self: flex-start;
+			}
+		}
+
+		
+	}
+
+	&-InputArea {
+		display: flex;
+		margin-top: 1rem;
+
+		.Input {
+			margin-right: 1rem;
+		}
+
+		.Button {
+			font-size: 1.6rem;
+			padding: 0.25rem 1rem;
+			margin-bottom: 4px;
+		}
+	}
 }

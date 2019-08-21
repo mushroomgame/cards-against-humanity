@@ -40,11 +40,25 @@
 
 	&-Players {
 		flex: 1;
+		overflow-y: auto;
 	}
 
 	&-Settings {
-		flex: 0 0 30rem;
+		flex: 0 0 20rem;
 		margin-top: 1rem;
+		display: flex;
+		flex-direction: column;
+
+		.Button {
+			flex: 1;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+
+			&:not(:first-of-type) {
+				margin-top: 1rem;
+			}
+		}
 	}
 
 	.PlayerTag {

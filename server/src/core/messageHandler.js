@@ -10,15 +10,21 @@ class MessageHandler {
 	registerEvents() {
 		whevent.bind('$LOGIN', this.onLogin, this);
 		whevent.bind('$LOBBY', this.onRequestLobby, this);
+		whevent.bind('$CHAT', this.onChat, this);
 	}
 
 	onRequestLobby(player) {
 		Lobby.$.enter(player);
 	}
 
+	onChat(player, {message}) {
+		if (player.channel) {
+			player.channel.broadcast('$CHAT', { player: { nickname: player.nickname, uuid: player.uuid }, message })
+		}
+	}
+
 	onLogin(player, { nickname }) {
 		let p = Player.getPlayerByNickname(nickname);
-		console.log(nickname);
 		if (p) {
 			player.send('$ERROR', { message: '已经有同名玩家在线了' });
 		} else {

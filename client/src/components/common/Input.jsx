@@ -11,9 +11,15 @@ export default class Input extends Component {
 	}
 
 	render() {
-		const { className, onChange, placeholder, ...rest } = this.props;
+		const { className, onChange, placeholder, onKeyPress, ...rest } = this.props;
 		return (
-			<input className={`Input ${className}`} type="text" placeholder={placeholder} onChange={this.onChange} value={this.state.content} {...rest} />
+			<input
+				className={`Input ${className}`}
+				type="text" placeholder={placeholder}
+				onChange={this.onChange}
+				onKeyPress={e => onKeyPress && onKeyPress(e)}
+				value={this.props.value || this.state.content} {...rest}
+			/>
 		);
 	}
 }
