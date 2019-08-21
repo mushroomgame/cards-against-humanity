@@ -18,6 +18,7 @@
 
 * Node.js
 * Express
+* WebSocket
 * MongoDB(待商榷)
 
 ## 开发步骤
