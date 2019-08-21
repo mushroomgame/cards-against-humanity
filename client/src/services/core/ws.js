@@ -9,22 +9,26 @@ const binded = {
 };
 
 function connect() {
-	socket = new WebSocket(config.get('wsserver'));
-	socket.onopen = event => {
-		binded.onOpen && binded.onOpen(event);
+	try {
+		socket = new WebSocket(config.get('wsserver'));
+	} finally {
+		socket.onopen = event => {
+			binded.onOpen && binded.onOpen(event);
 
-		socket.onclose = event => {
-			binded.onClose && binded.onClose(event);
-		}
+			socket.onclose = event => {
+				binded.onClose && binded.onClose(event);
+			}
 
-		socket.onmessage = event => {
-			binded.onMessage && binded.onMessage(event);
+			socket.onmessage = event => {
+				binded.onMessage && binded.onMessage(event);
+			}
 		}
 
 		socket.onerror = event => {
 			binded.onError && binded.onError(event);
 		}
 	}
+
 }
 
 function onOpen(handler, thisArg) {

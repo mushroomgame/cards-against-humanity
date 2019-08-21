@@ -4,15 +4,11 @@ const http = require('http');
 const express = require('express');
 const whevent = require('whevent');
 const Player = require('./entity/player');
-// test only
-const Test = require('./test');
-
+const MessageHandler = require('./entity/messageHandler');
 const port = config.get('port');
 
 class Server {
 	start() {
-		new Test().start();
-
 		const app = express();
 		const httpServer = http.createServer(app);
 		httpServer.listen(process.env.PORT || port);
@@ -29,7 +25,8 @@ class Server {
 				this.onClose(player);
 			});
 		});
-
+		const messageHandler = new MessageHandler();
+		messageHandler.start();
 		console.log(`WebSocket server is listening on port ${port}...`);
 	}
 
@@ -39,9 +36,9 @@ class Server {
 
 	onMessage(player, message) {
 		try {
-			let data = JSON.parse(Buffer.from(message, 'base64').toString());
+			let data = JSON.parse(Buffer.from(message, 'base64').toString('utf8'));
 			console.log(`Player ${player.uuid}: `, data);
-			whevent.emit(data.signal, player, data);
+			whevent.emit(data.signal, player, data.data);
 		} catch (ex) {
 			console.error(ex);
 			console.error(`Player ${player.uuid} unknown package: `, message);
@@ -50,6 +47,7 @@ class Server {
 
 	onClose(player) {
 		console.log(`Player ${player.uuid} has disconnected!`);
+		player.remove();
 	}
 
 	send(player, signal, data) {

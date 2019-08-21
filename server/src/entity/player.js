@@ -1,19 +1,22 @@
 
-const players = {};
+const players = new Map();
 let UUID = 0;
 class Player {
 	static getPlayer(ws) {
 		let uuid = ws.uuid;
+		let player;
 		if (!uuid) {
 			uuid = ++UUID;
-			let player = new Player(ws, uuid);
-			players[uuid] = player;
-			return player;
+			player = new Player(ws, uuid);
+			players.set(uuid, player);
 		} else {
-			let player = players[uuid];
-			player.ws = ws;
-			return players[uuid];
+			player = players.get(uuid);
 		}
+		return player;
+	}
+
+	static getPlayerByNickname(nickname) {
+		return [...players.values()].find(p => p.nickname === nickname);
 	}
 
 	constructor(ws, uuid) {
@@ -24,14 +27,14 @@ class Player {
 	send(signal, data) {
 		let pack = { signal, data };
 		try {
-			this.ws.send(Buffer.from(JSON.stringify(pack)).toString('base64'));
+			this.ws.send(Buffer.from(JSON.stringify(pack), 'utf8').toString('base64'));
 		} catch (ex) {
 			console.error(ex);
 		}
 	}
 
 	remove() {
-		delete Player.players[this.uuid];
+		players.delete(this.uuid);
 	}
 }
 

@@ -10,7 +10,20 @@ export default class Login extends Component {
 	}
 
 	componentDidMount() {
-		whevent.on('$$OPEN', this.onOpen, this);
+		whevent.bind('$$OPEN', this.onOpen, this);
+		whevent.bind('$$ERROR', this.onError, this);
+	}
+
+	componentWillUnmount(){
+		whevent.unbind('$$OPEN', this.onOpen, this);
+		whevent.unbind('$$ERROR', this.onError, this);
+	}
+
+	onError(err) {
+		if(this.state.connecting) {
+			alerter.alert('连接服务器失败');
+			this.setState({connecting: false});
+		}
 	}
 
 	onOpen() {

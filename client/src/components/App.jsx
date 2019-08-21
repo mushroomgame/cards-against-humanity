@@ -5,6 +5,7 @@ import global from '../services/global';
 import Login from './views/Login';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Lobby from './views/Lobby';
 
 export default class App extends Component {
 
@@ -36,6 +37,8 @@ export default class App extends Component {
 					switch (phase) {
 						case 'LOGIN':
 							return <Login />;
+						case 'LOBBY':
+							return <Lobby />;
 					}
 				})()}
 				<ToastContainer />
