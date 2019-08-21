@@ -55,9 +55,9 @@ class Lobby extends Component {
 							<PlayerTag key={`player_${index}`} player={p} />
 						)}</div>
 						<div className="Lobby-Settings">
-							<Button className="Button-Wide"><i className="icon-plus"></i>创建房间</Button>
-							<Button className="Button-Wide"><i className="icon-upload2"></i>制作卡牌</Button>
-							<Button className="Button-Wide"><i className="icon-cog"></i>游戏设置</Button>
+							<Button className="Button_Wide"><i className="icon-plus"></i>创建房间</Button>
+							<Button className="Button_Wide"><i className="icon-upload2"></i>制作卡牌</Button>
+							<Button className="Button_Wide"><i className="icon-cog"></i>游戏设置</Button>
 						</div>
 					</div>
 				</section>
