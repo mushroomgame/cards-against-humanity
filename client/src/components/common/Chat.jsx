@@ -8,11 +8,13 @@ import Button from './Button';
 
 import server from '../../services/server';
 import alerter from '../../utils/alerter';
+import config from '../../services/config';
 
 export default class Chat extends Component {
 	state = {
 		logs: [],
-		message: ''
+		message: '',
+		lastShowTime: null
 	}
 
 	componentWillMount() {
@@ -28,32 +30,42 @@ export default class Chat extends Component {
 	}
 
 	onReceiveChat({ player, message }) {
-		this.setState({
-			logs: [...this.state.logs, {
-				speaker: player.nickname,
-				message,
-				from: global.uuid === player.uuid ? 'Me' : (player.isSystem ? 'System' : 'Others')
-			}]
+		this.addLog({
+			speaker: player.nickname,
+			message,
+			from: global.uuid === player.uuid ? 'Me' : (player.isSystem ? 'System' : 'Others')
 		});
 	}
 
 	onPlayerEnter({ nickname }) {
-		this.setState({
-			logs: [...this.state.logs, {
-				speaker: '系统',
-				message: `${nickname} 进入了${this.props.roomName || '房间'}`,
-				from: 'System'
-			}]
+		this.addLog({
+			speaker: '系统',
+			message: `${nickname} 进入了${this.props.roomName || '房间'}`,
+			from: 'System'
 		});
 	}
 
 	onPlayerLeave({ nickname }) {
-		this.setState({
-			logs: [...this.state.logs, {
-				speaker: '系统',
-				message: `${nickname} 离开了${this.props.roomName || '房间'}`,
-				from: 'System'
-			}]
+		this.addLog({
+			speaker: '系统',
+			message: `${nickname} 离开了${this.props.roomName || '房间'}`,
+			from: 'System'
+		});
+	}
+
+	addLog(log) {
+		let now = new Date();
+		log.time = now.toLocaleTimeString();
+		if (!this.state.lastShowTime || now.getTime() - this.state.lastShowTime.getTime() > 30000) {
+			this.setState({ lastShowTime: now });
+		} else {
+			log.hideTime = true;
+			if(this.state.logs[this.state.logs.length - 1].speaker === log.speaker) {
+				log.consecutive = true;
+			}
+		}
+		this.setState({ logs: [...this.state.logs, log] }, ()=>{
+			document.querySelector('.Chat-Logs').scrollTop = document.querySelector('.Chat-Logs').scrollHeight;
 		});
 	}
 
@@ -63,7 +75,7 @@ export default class Chat extends Component {
 			alerter.alert('请输入聊天内容!');
 			return;
 		}
-		this.setState({message: ''});
+		this.setState({ message: '' });
 		server.send('$CHAT', { message: this.state.message });
 	}
 
@@ -85,9 +97,29 @@ export default class Chat extends Component {
 		return (
 			<div className="Chat">
 				<div className="Chat-Logs">{this.state.logs.map((log, index) =>
-					<dl key={`chat_${index}`} className={`Chat-Log Chat-Log-${log.from}`}>
+					<dl key={`chat_${index}`} className={`Chat-Log Chat-Log-${log.from}${log.consecutive ? ' Chat-Log_Consecutive' : ''}${log.hideTime ? ' Chat-Log_HideTime' : ''}`} data-time={log.time}>
 						<dt className="Chat-Log-Speaker">{log.speaker}</dt>
-						<dd className="Chat-Log-Message">{log.message}</dd>
+						{(()=>{
+							if(config.get('allowSendImage')){
+								const regex = /((http(s?):)([/|.|\w|\s|-])*\.(?:jpg|gif|png|jpeg|svg))/g;
+								let result = regex.exec(log.message);
+								if(result){
+									let messages = log.message.split(result[1]);
+									whevent.call('READ', (messages[0] || '') + (messages[1] || ''), 'user');
+									return <dd className="Chat-Log-Message">
+										{messages[0]}
+										<img src={result[1]} />
+										{messages[1]}
+									</dd>;
+								}else{
+									whevent.call('READ', log.message, 'user');
+									return <dd className="Chat-Log-Message">{log.message}</dd>;
+								}
+							}else{
+								whevent.call('READ', log.message, 'user');
+								return <dd className="Chat-Log-Message">{log.message}</dd>;
+							}
+						})()}
 					</dl>
 				)}</div>
 				<div className="Chat-InputArea">

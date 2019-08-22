@@ -1,3 +1,4 @@
 {
-	"wsserver": "ws://localhost:2333"
+	"wsserver": "ws://localhost:2333",
+	"allowSendImage": true
 }

@@ -9,14 +9,41 @@
 		padding: 1rem;
 		background-color: #ddd;
 		border-radius: 0.5rem;
+		display: flex;
+		flex-flow: column nowrap;
 		overflow-y: auto;
+		overflow-x: hidden;
 	}
 
 	&-Log {
 		margin: 0;
+		&:first-child {
+			margin-top: auto !important;
+		}
 		display: flex;
 		flex-direction: column;
-		margin: 1rem 0;
+		margin-top: 1rem;
+
+		&_Consecutive {
+			.Chat-Log-Speaker {
+				display: none !important;
+			}
+		}
+
+		&:not(&_HideTime) {
+			&.Chat-Log-System {
+				&::before {
+					margin-bottom: 1rem;
+				}
+			}
+			&::before {
+				content: attr(data-time);
+				display: block;
+				text-align: center;
+				font-size: 1.2rem;
+				color: #999;
+			}
+		}
 
 		&-Speaker {
 			font-size: 1.2rem;
@@ -27,6 +54,10 @@
 		&-Message {
 			margin: 0;
 			display: block;
+
+			img {
+				max-width: 100%;
+			}
 		}
 
 		&-Me, &-Others {
@@ -49,6 +80,8 @@
 				border: solid 1px #8c7;
 				color: #465;
 			}
+
+			animation: slide-in-right .3s both;
 		}
 
 		&-System {
@@ -72,6 +105,8 @@
 			.Chat-Log-Message {
 				align-self: flex-start;
 			}
+
+			animation: slide-in-left .3s both;
 		}
 
 		
@@ -90,5 +125,25 @@
 			padding: 0.25rem 1rem;
 			margin-bottom: 4px;
 		}
+	}
+}
+
+@keyframes slide-in-right {
+	from {
+		transform: translateX(100%);
+	}
+
+	to {
+		transform: translateX(0%);
+	}
+}
+
+@keyframes slide-in-left {
+	from {
+		transform: translateX(-100%);
+	}
+
+	to {
+		transform: translateX(0%);
 	}
 }
