@@ -101,7 +101,7 @@ export default class Chat extends Component {
 						<dt className="Chat-Log-Speaker">{log.speaker}</dt>
 						{(()=>{
 							if(config.get('allowSendImage')){
-								const regex = /((http(s?):)([/|.|\w|\s|-])*\.(?:jpg|gif|png|jpeg|svg))/g;
+								const regex = /((http(s?):)\/\/.*\.(?:jpg|gif|png|jpeg|svg))/g;
 								let result = regex.exec(log.message);
 								if(result){
 									let messages = log.message.split(result[1]);
