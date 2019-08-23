@@ -50,7 +50,7 @@ export default class Chat extends Component {
 	onPlayerEnter({ nickname }) {
 		this.addLog({
 			speaker: '系统',
-			message: `${nickname} 进入了${this.props.roomName || '房间'}`,
+			message: `${nickname} 进入了${this.props.roomName || '大厅'}`,
 			from: 'System'
 		});
 	}
@@ -58,7 +58,7 @@ export default class Chat extends Component {
 	onPlayerLeave({ nickname }) {
 		this.addLog({
 			speaker: '系统',
-			message: `${nickname} 离开了${this.props.roomName || '房间'}`,
+			message: `${nickname} 离开了${this.props.roomName || '大厅'}`,
 			from: 'System'
 		});
 	}
