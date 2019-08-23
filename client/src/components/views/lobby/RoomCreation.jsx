@@ -13,8 +13,10 @@ const data = [
 		label: '黑卡卡包',
 		value: [
 			{ id: '0', name: '基础', checked: true },
-			{ id: '1', name: '网络用语', checked: true },
-			{ id: '2', name: 'A岛', checked: true }
+			{ id: '1', name: 'Cards Against Humanity 原版', checked: true },
+			{ id: '2', name: '网络用语', checked: true },
+			{ id: '3', name: 'A岛', checked: true },
+			{ id: '4', name: '玩家自制', checked: true }
 		]
 	},
 	{
@@ -23,8 +25,10 @@ const data = [
 		label: '白卡卡包',
 		value: [
 			{ id: '0', name: '基础', checked: true },
-			{ id: '1', name: '网络用语', checked: true },
-			{ id: '2', name: 'A岛', checked: true }
+			{ id: '1', name: 'Cards Against Humanity 原版', checked: true },
+			{ id: '2', name: '网络用语', checked: true },
+			{ id: '3', name: 'A岛', checked: true },
+			{ id: '4', name: '玩家自制', checked: true }
 		]
 	}
 ];

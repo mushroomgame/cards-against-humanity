@@ -18,36 +18,34 @@ class Popup extends Component {
 		if (element) {
 			let popups = this.state.popups.filter(p => p.id !== id);
 			popups.push({ id, element });
-			console.log(popups);
 			this.setState({ popups });
 		} else {
 			this.setState({ popups: this.state.popups.filter(p => p.id !== id) });
 		}
 	}
 
-	onClickBlankArea = () => {
-		if (this.props.onClickBlankArea) {
-
-		}
-
+	onClickBlankArea = id => {
+		this.props.onClickBlankArea && this.props.onClickBlankArea();
 		if (!this.props.preventBlankAreaDefaultBehavior) {
-			this.setState({ popups: [] });
+			this.setState({ popups: this.state.popups.filter(p => p.id !== id) });
 		}
 	}
 
-	onClickClose = () => {
-		this.setState({ popups: [] });
+	onClickClose = id => {
+		this.setState({ popups: this.state.popups.filter(p => p.id !== id) });
 	}
 
 	render() {
 		return (
 			<section className={`Popup-Container ${this.state.popups.length > 0 ? 'Active' : ''}`}>
-				<div className="Popup-BlankArea" onClick={this.onClickBlankArea}></div>
 				{this.state.popups.map((p, index) =>
-					<div key={`popup_${index}`} className="Popup" id={`popup_${p.id}`}>
-						<a className="Popup-Close" href="javascript: void(0)" onClick={this.onClickClose}><i className="icon-cross"></i></a>
-						{p.element}
-					</div>
+					<React.Fragment key={`popup_${index}`}>
+						<div className="Popup-BlankArea" onClick={()=>this.onClickBlankArea(p.id)}></div>
+						<div className="Popup" id={`popup_${p.id}`}>
+							<a className="Popup-Close" href="javascript: void(0)" onClick={()=>this.onClickClose(p.id)}><i className="icon-cross"></i></a>
+							{p.element}
+						</div>
+					</React.Fragment>
 				)}
 			</section>
 		);
