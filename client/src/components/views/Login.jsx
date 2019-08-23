@@ -27,6 +27,7 @@ export default class Login extends Component {
 		if (this.state.connecting) {
 			alerter.alert('连接服务器失败');
 			this.setState({ connecting: false });
+			whevent.call('LOADING');
 		}
 	}
 
@@ -51,6 +52,7 @@ export default class Login extends Component {
 		}
 
 		this.setState({ connecting: true });
+		whevent.call('LOADING', '登录中...');
 		server.connect();
 	}
 

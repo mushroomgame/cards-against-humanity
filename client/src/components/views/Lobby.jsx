@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
-import Mask from '../common/Mask';
 import whevent from 'whevent';
 import Chat from '../common/Chat';
 import RoomTag from './lobby/RoomTag';
 import PlayerTag from './lobby/PlayerTag';
 import Button from '../common/Button';
+import Form from '../common/Form';
+import RoomCreation from './lobby/RoomCreation';
 
 class Lobby extends Component {
 	state = {
-		loading: true,
 		rooms: [],
 		players: []
 	}
@@ -17,16 +17,21 @@ class Lobby extends Component {
 		whevent.bind('$LOBBY', this.onGetLobby, this);
 		whevent.bind('$ENTER', this.onSomeoneEnter, this);
 		whevent.bind('$LEAVE', this.onSomeoneLeave, this);
+
+		whevent.bind('CREATE_ROOM_CLICKED', this.onClickCreateRoom, this);
 	}
 
 	componentWillUnmount() {
 		whevent.unbind('$LOBBY', this.onGetLobby, this);
 		whevent.unbind('$ENTER', this.onSomeoneEnter, this);
 		whevent.unbind('$LEAVE', this.onSomeoneLeave, this);
+
+		whevent.unbind('CREATE_ROOM_CLICKED', this.onClickCreateRoom, this);
 	}
 
 	onGetLobby({ rooms, players }) {
-		this.setState({ loading: false, rooms, players });
+		whevent.call('LOADING');
+		this.setState({ rooms, players });
 	}
 
 	onSomeoneEnter(player) {
@@ -37,10 +42,14 @@ class Lobby extends Component {
 		this.setState({ players: this.state.players.filter(p => p.uuid !== player.uuid) });
 	}
 
+	onClickCreateRoom(){
+		const popup = <RoomCreation />
+		whevent.call('POPUP', 'ROOM_CREATION', popup);
+	}
+
 	render() {
 		return (
 			<React.Fragment>
-				{this.state.loading && <Mask text="获取大厅信息..." />}
 				<section className="Lobby">
 					<div className="Lobby-LeftPanel">
 						<div className="Lobby-Rooms">{this.state.rooms.map((r, index) =>
@@ -55,9 +64,9 @@ class Lobby extends Component {
 							<PlayerTag key={`player_${index}`} player={p} />
 						)}</div>
 						<div className="Lobby-Settings">
-							<Button className="Button_Wide"><i className="icon-plus"></i>创建房间</Button>
-							<Button className="Button_Wide"><i className="icon-upload2"></i>制作卡牌</Button>
-							<Button className="Button_Wide"><i className="icon-cog"></i>游戏设置</Button>
+							<Button className="Button_Wide" event="CREATE_ROOM_CLICKED"><i className="icon-plus"></i>创建房间</Button>
+							<Button className="Button_Wide" event="CREATE_CARD_CLICKED"><i className="icon-upload2"></i>制作卡牌</Button>
+							<Button className="Button_Wide" event="GAME_SETTINGS_CLICKED"><i className="icon-cog"></i>游戏设置</Button>
 						</div>
 					</div>
 				</section>

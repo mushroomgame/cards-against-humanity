@@ -8,6 +8,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import Lobby from './views/Lobby';
 import alerter from '../utils/alerter';
 import TTS from './common/TTS';
+import Popup from './common/Popup';
+import Loading from './common/Loading';
 
 export default class App extends Component {
 
@@ -54,6 +56,8 @@ export default class App extends Component {
 				})()}
 				<ToastContainer />
 				<TTS />
+				<Popup />
+				<Loading />
 			</div>
 		);
 	}
