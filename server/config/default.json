@@ -1,3 +1,5 @@
 {
-	"port": 2333
+	"port": 2333,
+	"maxPlayers": 8,
+	"maxSpectators": -1
 }

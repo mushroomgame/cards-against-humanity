@@ -1,39 +1,67 @@
 import React, { Component } from 'react';
 import Form from '../../common/Form';
+import whevent from 'whevent';
 
 import alerter from '../../../utils/alerter';
 import server from '../../../services/server';
+import global from '../../../services/global';
 
-const data = [
+let data = [
 	{ name: 'roomName', type: 'text', label: '房间名', value: '' },
 	{ name: 'password', type: 'password', label: '密码', value: '' },
-	{
-		name: 'blackDecks',
-		type: 'checkboxes',
-		label: '黑卡卡包',
-		value: [
-			{ id: '0', name: '基础', checked: true },
-			{ id: '1', name: 'Cards Against Humanity 原版', checked: true },
-			{ id: '2', name: '网络用语', checked: true },
-			{ id: '3', name: 'A岛', checked: true },
-			{ id: '4', name: '玩家自制', checked: true }
-		]
-	},
-	{
-		name: 'whiteDecks',
-		type: 'checkboxes',
-		label: '白卡卡包',
-		value: [
-			{ id: '0', name: '基础', checked: true },
-			{ id: '1', name: 'Cards Against Humanity 原版', checked: true },
-			{ id: '2', name: '网络用语', checked: true },
-			{ id: '3', name: 'A岛', checked: true },
-			{ id: '4', name: '玩家自制', checked: true }
-		]
-	}
 ];
 
 class RoomCreation extends Component {
+	state = {
+		initialized: false,
+		loaded: false
+	}
+
+	componentDidMount() {
+		whevent.bind('$DECKS', this.onGetDecks, this);
+		if (!global.decks) {
+			whevent.call('LOADING', '获取服务器信息...');
+			server.send('$DECKS');
+		} else {
+			this.setState({ loaded: true });
+		}
+	}
+
+	componentWillUnmount() {
+		whevent.unbind('$DECKS', this.onGetDecks, this);
+	}
+
+	onGetDecks(decks) {
+		if (this.state.initialized) return;
+		whevent.call('LOADING');
+		let whiteDecks = {
+			name: 'whiteDecks',
+			type: 'checkboxes',
+			label: '白卡卡包',
+			value: decks.map(d => ({
+				id: d.id,
+				name: d.name,
+				// name: `${d.name}(${d.white}张)`,
+				checked: true
+			}))
+		};
+
+		let blackDecks = {
+			name: 'blackDecks',
+			type: 'checkboxes',
+			label: '黑卡卡包',
+			value: decks.map(d => ({
+				id: d.id,
+				name: d.name,
+				// name: `${d.name}(${d.black}张)`,
+				checked: true
+			}))
+		};
+		data.push(whiteDecks, blackDecks);
+		global.decks = decks;
+		this.setState({ loaded: true, initialized: true });
+	}
+
 	onChange = (name, value) => {
 		let item = data.find(d => d.name === name);
 		item.value = value;
@@ -66,7 +94,7 @@ class RoomCreation extends Component {
 
 	render() {
 		return (
-			<section className="RoomCreation">
+			this.state.loaded && <section className="RoomCreation">
 				<Form onChange={this.onChange} buttons={[{ label: '创建房间', onClick: this.onCreate }]} data={data} />
 			</section>
 		);

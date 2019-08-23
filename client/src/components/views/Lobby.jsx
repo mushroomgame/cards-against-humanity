@@ -43,7 +43,7 @@ class Lobby extends Component {
 	}
 
 	onClickCreateRoom(){
-		const popup = <RoomCreation />
+		const popup = <RoomCreation />;
 		whevent.call('POPUP', 'ROOM_CREATION', popup);
 	}
 
