@@ -1,40 +1,69 @@
 import React, { Component } from 'react';
 import Form from '../../common/Form';
 
-class RoomCreation extends Component {
-	state = {
-		form: [
-			{ name: 'roomName', type: 'text', value: '' },
-			{ name: 'password', type: 'password', value: '' },
-			{
-				name: 'blackDecks',
-				type: 'checkboxs',
-				value: [
-					{ name: '基础', id: 0, active: true },
-					{ name: '网络用语', id: 1, active: true },
-					{ name: 'A岛', id: 2, active: true },
-				]
-			},
-			{
-				name: 'whiteDecks',
-				type: 'checkboxs',
-				value: [
-					{ name: '基础', id: 0, active: true },
-					{ name: '网络用语', id: 1, active: true },
-					{ name: 'A岛', id: 2, active: true },
-				]
-			}
+import alerter from '../../../utils/alerter';
+import server from '../../../services/server';
+
+const data = [
+	{ name: 'roomName', type: 'text', label: '房间名', value: '' },
+	{ name: 'password', type: 'password', label: '密码', value: '' },
+	{
+		name: 'blackDecks',
+		type: 'checkboxes',
+		label: '黑卡卡包',
+		value: [
+			{ id: '0', name: '基础', checked: true },
+			{ id: '1', name: '网络用语', checked: true },
+			{ id: '2', name: 'A岛', checked: true }
+		]
+	},
+	{
+		name: 'whiteDecks',
+		type: 'checkboxes',
+		label: '白卡卡包',
+		value: [
+			{ id: '0', name: '基础', checked: true },
+			{ id: '1', name: '网络用语', checked: true },
+			{ id: '2', name: 'A岛', checked: true }
 		]
 	}
+];
 
+class RoomCreation extends Component {
 	onChange = (name, value) => {
-		
+		let item = data.find(d => d.name === name);
+		item.value = value;
+	}
+
+	onCreate = () => {
+		const finalData = {};
+		data.map(d => {
+			if (d.type === 'checkboxes') {
+				finalData[d.name] = [];
+				d.value.forEach(v => {
+					v.checked && finalData[d.name].push(v.id);
+				});
+			} else {
+				finalData[d.name] = d.value;
+			}
+			return finalData;
+		});
+
+		if (finalData.whiteDecks.length === 0) {
+			alerter.alert('必须至少选择一个白卡卡包！');
+			return;
+		} else if (finalData.blackDecks.length === 0) {
+			alerter.alert('必须至少选择一个黑卡卡包！');
+			return;
+		}
+
+		server.send('$CREATE_ROOM', finalData);
 	}
 
 	render() {
 		return (
 			<section className="RoomCreation">
-				<Form onChange={this.onChange} data={this.state.form} />
+				<Form onChange={this.onChange} buttons={[{ label: '创建房间', onClick: this.onCreate }]} data={data} />
 			</section>
 		);
 	}

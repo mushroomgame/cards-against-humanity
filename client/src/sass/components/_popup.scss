@@ -7,11 +7,47 @@
 	align-items: center;
 	background-color: rgba(0,0,0,.5);
 
-	&:empty {
+	&:not(.Active) {
 		display: none;
 	}
 }
 
 .Popup {
-	
+	z-index: 1;
+	border-radius: 1rem;
+	box-shadow: 0px 4px 4px rgba(0,0,0,.2);
+	background-color: #eee;
+	padding: 3rem 4rem;
+	position: relative;
+	border: solid 2px #666;
+
+	&-BlankArea {
+		position: absolute;
+		top: 0; right: 0; bottom: 0; left: 0;
+	}
+
+	&-Close {
+		z-index: 2;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		position: absolute;
+		text-decoration: none;
+		color: #666;
+		width: 4rem;
+		height: 4rem;
+		background-color: #fff;
+		border-radius: 100%;
+		border: solid 2px #666;
+		right: 0;
+		top: 0;
+		transform: translate(25%, -25%);
+		transition: all .3s;
+
+		&:hover {
+			color: #fff;
+			background-color: #666;
+			border: solid 2px #fff;
+		}
+	}
 }

@@ -1,4 +1,5 @@
 .Button {
+	--shadow-color: rgba(0, 0, 0, 0.5);
 	&,
 	&:link,
 	&:visited {
@@ -7,7 +8,7 @@
 		padding: 1rem 2rem;
 		background-color: #aaa;
 		color: #fff;
-		box-shadow: 0px 4px rgba(0, 0, 0, 0.5);
+		box-shadow: 0px 4px var(--shadow-color);
 		text-align: center;
 		border-radius: 0.5rem;
 		font-size: 2rem;
@@ -17,7 +18,7 @@
 
 	&:hover {
 		transform: translateY(-2px);
-		box-shadow: 0px 6px rgba(0, 0, 0, 0.5);
+		box-shadow: 0px 6px var(--shadow-color);
 		transition-duration: 0.1s;
 	}
 
@@ -33,6 +34,6 @@
 	&:not(.Button-Disabled):active {
 		transition-duration: 0.1s;
 		transform: translateY(2px);
-		box-shadow: 0px 2px rgba(0, 0, 0, 0.5);
+		box-shadow: 0px 2px var(--shadow-color);
 	}
 }

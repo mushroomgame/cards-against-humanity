@@ -25,7 +25,7 @@ class TTS extends Component {
 
 	render() {
 		return (
-			<div class="TTS">
+			<div className="TTS">
 				<audio id="TTS_system" src={`http://tts.baidu.com/text2audio?lan=zh&pid=101&ie=UTF-8&idx=1&tex=${encodeURI(this.state.system)}&per=0&ctp=1&cuid=1&pdt=1`}></audio>
 				<audio id="TTS_user" src={`http://tts.baidu.com/text2audio?lan=zh&pid=101&ie=UTF-8&idx=1&tex=${encodeURI(this.state.user)}&per=0&ctp=1&cuid=1&pdt=1`}></audio>
 			</div>

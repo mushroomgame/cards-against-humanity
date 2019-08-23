@@ -1,11 +1,60 @@
 import React, { Component } from 'react';
-export default class Form extends Component {
-	state = {}
-	render() {
+import Button from '../common/Button';
 
+
+export default class Form extends Component {
+	state = {
+		data: [],
+		buttons: []
+	}
+
+	componentDidMount() {
+		this.setState({ data: this.props.data, buttons: this.props.buttons });
+	}
+
+	onChange = (name, value) => {
+		this.props.onChange && this.props.onChange(name, value);
+		const data = [...this.state.data];
+		let item = data.find(d => d.name === name);
+		item.value = value;
+		this.setState({ data });
+	}
+
+	drawItem({ type, name, value, boxes }) {
+		switch (type) {
+			case 'password':
+				return <input className="Input Form-Item-Input Form-Item-Input_Password" type="password" id={name} name={name} value={value} onChange={e => this.onChange(name, e.target.value)} />;
+			case 'checkboxes':
+				return <div className="Form-Item-Group Form-Item-Group_Checkboxes" >{value.map((c, index) =>
+					<div key={`checkboxes_${index}`} className="Form-Item-Group-Item">
+						<input type="checkbox" id={`${name}_${c.id}`} name={`${name}_${c.id}`} checked={c.checked && 'checked'} onChange={e => {
+							let newValue = [...value];
+							let v = newValue.find(n => n.id === c.id);
+							v.checked = !v.checked;
+							this.onChange(name, newValue);
+						}} />
+						<label className="Form-Item-Input Form-Item-Input_Checkbox" htmlFor={`${name}_${c.id}`}>{c.name}</label>
+					</div>
+				)}</div>;
+
+			case 'text':
+			default:
+				return <input className="Input Form-Item-Input Form-Item-Input_Text" type="text" id={name} name={name} value={value} onChange={e => this.onChange(name, e.target.value)} />;
+		}
+	}
+
+	render() {
 		return (
 			<form className="Form">
-
+				<div className="Form-Items">{this.state.data.map((d, index) =>
+					<div className="Form-Item" key={`form_item_${index}`}>
+						{d.label && <label className="Form-Item-Title" htmlFor={d.name}>{d.label}</label>}
+						{this.drawItem(d)}
+					</div>
+				)}</div>
+				<div className="Form-Buttons">{this.state.buttons.map((b, index) =>
+					<Button className="Button_Wide" onClick={b.onClick} key={`form_button_${index}`}>{b.label}</Button>
+				)}</div>
 			</form>
 		);
 	}
