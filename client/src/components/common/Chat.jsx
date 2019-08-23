@@ -30,6 +30,16 @@ export default class Chat extends Component {
 	}
 
 	onReceiveChat({ player, message }) {
+		
+		const regex = /((http(s?):)\/\/.*\.(?:jpg|gif|png|jpeg|svg))/g;
+		let result = regex.exec(message);
+		if (result) {
+			let messages = message.split(result[1]);
+			whevent.call('READ', messages[0] + messages[1], 'user');
+		} else {
+			whevent.call('READ', message, 'user');
+		}
+
 		this.addLog({
 			speaker: player.nickname,
 			message,
@@ -60,11 +70,11 @@ export default class Chat extends Component {
 			this.setState({ lastShowTime: now });
 		} else {
 			log.hideTime = true;
-			if(this.state.logs[this.state.logs.length - 1].speaker === log.speaker) {
+			if (this.state.logs[this.state.logs.length - 1].speaker === log.speaker) {
 				log.consecutive = true;
 			}
 		}
-		this.setState({ logs: [...this.state.logs, log] }, ()=>{
+		this.setState({ logs: [...this.state.logs, log] }, () => {
 			document.querySelector('.Chat-Logs').scrollTop = document.querySelector('.Chat-Logs').scrollHeight;
 		});
 	}
@@ -99,24 +109,22 @@ export default class Chat extends Component {
 				<div className="Chat-Logs">{this.state.logs.map((log, index) =>
 					<dl key={`chat_${index}`} className={`Chat-Log Chat-Log-${log.from}${log.consecutive ? ' Chat-Log_Consecutive' : ''}${log.hideTime ? ' Chat-Log_HideTime' : ''}`} data-time={log.time}>
 						<dt className="Chat-Log-Speaker">{log.speaker}</dt>
-						{(()=>{
-							if(config.get('allowSendImage')){
+						{(() => {
+							if (config.get('allowSendImage')) {
 								const regex = /((http(s?):)\/\/.*\.(?:jpg|gif|png|jpeg|svg))/g;
 								let result = regex.exec(log.message);
-								if(result){
+								if (result) {
 									let messages = log.message.split(result[1]);
-									whevent.call('READ', (messages[0] || '') + (messages[1] || ''), 'user');
 									return <dd className="Chat-Log-Message">
 										{messages[0]}
 										<img src={result[1]} />
 										{messages[1]}
 									</dd>;
-								}else{
-									whevent.call('READ', log.message, 'user');
+								} else {
+
 									return <dd className="Chat-Log-Message">{log.message}</dd>;
 								}
-							}else{
-								whevent.call('READ', log.message, 'user');
+							} else {
 								return <dd className="Chat-Log-Message">{log.message}</dd>;
 							}
 						})()}

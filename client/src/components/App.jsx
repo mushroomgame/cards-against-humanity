@@ -7,6 +7,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Lobby from './views/Lobby';
 import alerter from '../utils/alerter';
+import TTS from './common/TTS';
 
 export default class App extends Component {
 
@@ -52,6 +53,7 @@ export default class App extends Component {
 					}
 				})()}
 				<ToastContainer />
+				<TTS />
 			</div>
 		);
 	}
