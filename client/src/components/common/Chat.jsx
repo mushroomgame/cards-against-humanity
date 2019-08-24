@@ -10,6 +10,9 @@ import server from '../../services/server';
 import alerter from '../../utils/alerter';
 import config from '../../services/config';
 
+const sentMessages = [];
+let pointer = 0;
+
 export default class Chat extends Component {
 	state = {
 		logs: [],
@@ -85,6 +88,8 @@ export default class Chat extends Component {
 			alerter.alert('请输入聊天内容!');
 			return;
 		}
+		sentMessages.push(message);
+		pointer = sentMessages.length;
 		this.setState({ message: '' });
 		server.send('$CHAT', { message: this.state.message });
 	}
@@ -93,13 +98,25 @@ export default class Chat extends Component {
 		this.setState({ message });
 	}
 
-	onKeyPress = ({ key }) => {
+	onKeyPress = (e) => {
+		const { key } = e;
 		if (key === 'Enter') {
+			e.preventDefault();
 			this.onClickSend();
-		} else if (key === 'Up') {
-
-		} else if (key === 'Down') {
-
+		} else if (key === 'ArrowUp') {
+			e.preventDefault();
+			pointer = Math.max(pointer - 1, 0);
+			const message = sentMessages[pointer];
+			if(message) {
+				this.setState({ message });
+			}
+		} else if (key === 'ArrowDown') {
+			e.preventDefault();
+			pointer = Math.min(pointer + 1, sentMessages.length - 1);
+			const message = sentMessages[pointer];
+			if(message) {
+				this.setState({ message });
+			}
 		}
 	}
 
@@ -131,7 +148,7 @@ export default class Chat extends Component {
 					</dl>
 				)}</div>
 				<div className="Chat-InputArea">
-					<Input onKeyPress={this.onKeyPress} onChange={this.onMessageChange} value={this.state.message} />
+					<Input onKeyDown={this.onKeyPress} onChange={this.onMessageChange} value={this.state.message} />
 					<Button onClick={this.onClickSend}>发送</Button>
 				</div>
 			</div>
