@@ -1,5 +1,6 @@
 const Channel = require('../entity/channel');
 const config = require('config');
+const cardService = require('../services/cardService');
 
 const roomMap = new Map();
 
@@ -23,7 +24,7 @@ class Room extends Channel {
 	}
 
 	static getRoomList(){
-		return [...roomMap.keys].map(k => ({
+		return [...roomMap.keys()].map(k => ({
 			id: k,
 			info: roomMap.get(k).getRoomShortInfo()
 		}));
@@ -34,21 +35,23 @@ class Room extends Channel {
 	}
 
 	getRoomShortInfo(){
+		const decks = cardService.getDecksFromCache();
 		return {
 			name: this.name,
 			password: !!this.password,
-			blackDecks: this.blackDecks,
-			whiteDecks: this.whiteDecks,
-			players: this.gamePlayers.count,
-			spectators: this.gamePlayers.count,
+			blackDecks: this.blackDecks.map(b => decks.find(d => d.id === b).name),
+			whiteDecks: this.whiteDecks.map(w => decks.find(d => d.id === w).name),
+			players: this.gamePlayers.length,
+			spectators: this.spectators.length,
 		}
 	}
 
 	getRoomInfo(){
+		const decks = cardService.getDecksFromCache();
 		return {
 			name: this.name,
-			blackDecks: this.blackDecks,
-			whiteDecks: this.whiteDecks,
+			blackDecks: this.blackDecks.map(b => decks.find(d => d.id === b).name),
+			whiteDecks: this.whiteDecks.map(w => decks.find(d => d.id === w).name),
 			players: this.gamePlayers.map(p => ({ uuid: p.uuid, nickname: p.nickname })),
 			spectators: this.spectators.map(p => ({ uuid: p.uuid, nickname: p.nickname })),
 		}
@@ -74,6 +77,14 @@ class Room extends Channel {
 		this.gamePlayers = this.gamePlayers.filter(p => p !== player);
 		this.spectators = this.spectators.filter(p => p !== player);
 		super.leave(player);
+
+		if(this.players.length === 0){
+			this.destroy();
+		}
+	}
+
+	destroy(){
+
 	}
 
 	broadcastToGamePlayers(signal, data, ...excepts) {

@@ -42,7 +42,7 @@ class Server {
 	onMessage(player, message) {
 		try {
 			let data = JSON.parse(Buffer.from(message, 'base64').toString('utf8'));
-			console.log(`Player ${player.uuid}: `, data);
+			console.log(`${player.uuid} ->`, data);
 			whevent.emit(data.signal, player, data.data);
 		} catch (ex) {
 			console.error(ex);

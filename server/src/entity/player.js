@@ -27,6 +27,7 @@ class Player {
 	send(signal, data) {
 		let pack = { signal, data };
 		try {
+			console.log(`${this.uuid} <-`, pack);
 			this.ws.send(Buffer.from(JSON.stringify(pack), 'utf8').toString('base64'));
 		} catch (ex) {
 			console.error(ex);

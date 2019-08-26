@@ -1,4 +1,5 @@
 const Channel = require('../entity/channel');
+const Room = require('../entity/room');
 
 class Lobby extends Channel {
 	constructor() {
@@ -9,9 +10,8 @@ class Lobby extends Channel {
 
 	enter(player) {
 		super.enter(player);
-
 		this.broadcast('$ENTER', { uuid: player.uuid, nickname: player.nickname }, player);
-		player.send('$LOBBY', { rooms: [], players: this.getPlayerListData() });
+		player.send('$LOBBY', { rooms: Room.getRoomList(), players: this.getPlayerListData() });
 	}
 
 	leave(player) {

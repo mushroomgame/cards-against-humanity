@@ -27,8 +27,9 @@ export default class App extends Component {
 		whevent.unbind('$LOGGED_IN', this.onLoggedIn, this);
 	}
 
-	onClosed(){
+	onClosed() {
 		alerter.alert('与服务器失去连接!');
+		whevent.call('POPUP');
 		this.setState({ phase: 'LOGIN' });
 	}
 
@@ -40,20 +41,24 @@ export default class App extends Component {
 		});
 	}
 
-	render() {
+	renderView() {
 		const { phase } = this.state;
+		switch (phase) {
+			case 'LOGIN':
+				return <Login />;
+			case 'LOBBY':
+				return <Lobby />;
+			case 'ROOM':
+				return null;
+			default:
+				return null;
+		}
+	}
+
+	render() {
 		return (
 			<div className='App'>
-				{(() => {
-					switch (phase) {
-						case 'LOGIN':
-							return <Login />;
-						case 'LOBBY':
-							return <Lobby />;
-						default:
-							return null;
-					}
-				})()}
+				{this.renderView()}
 				<ToastContainer />
 				<TTS />
 				<Popup />

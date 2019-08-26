@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'icomoon';
-  src:  url('fonts/icomoon.eot?5vjj9q');
-  src:  url('fonts/icomoon.eot?5vjj9q#iefix') format('embedded-opentype'),
-    url('fonts/icomoon.ttf?5vjj9q') format('truetype'),
-    url('fonts/icomoon.woff?5vjj9q') format('woff'),
-    url('fonts/icomoon.svg?5vjj9q#icomoon') format('svg');
+  src:  url('fonts/icomoon.eot?9yoawk');
+  src:  url('fonts/icomoon.eot?9yoawk#iefix') format('embedded-opentype'),
+    url('fonts/icomoon.ttf?9yoawk') format('truetype'),
+    url('fonts/icomoon.woff?9yoawk') format('woff'),
+    url('fonts/icomoon.svg?9yoawk#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -27,14 +27,23 @@
 .icon-book:before {
   content: "\e91f";
 }
+.icon-users:before {
+  content: "\e972";
+}
 .icon-spinner2:before {
   content: "\e97b";
+}
+.icon-lock:before {
+  content: "\e98f";
 }
 .icon-cog:before {
   content: "\e994";
 }
 .icon-upload2:before {
   content: "\e9c6";
+}
+.icon-eye:before {
+  content: "\e9ce";
 }
 .icon-plus:before {
   content: "\ea0a";

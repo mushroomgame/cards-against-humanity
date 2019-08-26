@@ -52,8 +52,8 @@ class Lobby extends Component {
 			<React.Fragment>
 				<section className="Lobby">
 					<div className="Lobby-LeftPanel">
-						<div className="Lobby-Rooms">{this.state.rooms.map((r, index) =>
-							<RoomTag key={`room_${index}`} room={r} />
+						<div className="Lobby-Rooms">{this.state.rooms.map(r =>
+							<RoomTag key={`room_${r.id}`} id={r.id} info={r.info} />
 						)}</div>
 					</div>
 					<div className="Lobby-CenterPanel">
