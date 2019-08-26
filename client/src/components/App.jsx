@@ -23,6 +23,7 @@ export default class App extends Component {
 		whevent.bind('$LOGGED_IN', this.onLoggedIn, this);
 		whevent.bind('$LOBBY', this.onGetInLobby, this);
 		whevent.bind('$ROOM', this.onGetInRoom, this);
+		whevent.bind('$ALERT', this.onAlert, this);
 	}
 
 	componentWillUnmount() {
@@ -30,6 +31,12 @@ export default class App extends Component {
 		whevent.unbind('$LOGGED_IN', this.onLoggedIn, this);
 		whevent.unbind('$LOBBY', this.onGetInLobby, this);
 		whevent.unbind('$ROOM', this.onGetInRoom, this);
+		whevent.unbind('$ALERT', this.onAlert, this);
+	}
+
+	onAlert({ message }) {
+		whevent.call('LOADING');
+		alerter.alert(message);
 	}
 
 	onClosed() {
@@ -44,13 +51,13 @@ export default class App extends Component {
 		server.send('$LOBBY');
 	}
 
-	onGetInLobby(data){
+	onGetInLobby(data) {
 		whevent.call('LOADING');
 		global.lobby = data;
 		this.setState({ phase: 'LOBBY' });
 	}
 
-	onGetInRoom(data){
+	onGetInRoom(data) {
 		whevent.call('LOADING');
 		global.room = data;
 		whevent.call('POPUP');

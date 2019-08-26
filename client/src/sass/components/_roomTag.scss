@@ -6,6 +6,10 @@
 	transition: background-color .3s;
 	cursor: pointer;
 
+	&:not(:first-of-type){
+		margin-top: 1rem;
+	}
+
 	&:hover {
 		background-color: #fff;
 	}
@@ -29,6 +33,10 @@
 		padding: 0;
 		margin: 0;
 		margin-right: auto;
+	}
+
+	&-Password {
+		font-size: 2rem;
 	}
 
 	&-Decks {

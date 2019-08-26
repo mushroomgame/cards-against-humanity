@@ -1,7 +1,45 @@
 import React, { Component } from 'react';
+import Form from '../../common/Form';
+import whevent from 'whevent';
+import server from '../../../services/server';
+import alerter from '../../../utils/alerter';
 
-class RoomTag extends Component {
-	state = {}
+export default class RoomTag extends Component {
+	state = {
+		password: ''
+	}
+
+	onClick = () => {
+		const { id, password } = this.props.data;
+		const data = [
+			{ name: 'password', type: 'password', label: '密码', value: this.state.password },
+		];
+		if (password) {
+			const popup = <section>
+				<Form onChange={this.onPasswordChange} buttons={[{ label: '进入', onClick: this.onClickEnter }]} data={data} />
+			</section>;
+			whevent.call('POPUP', 'ROOM_PASSWORD', popup);
+		} else {
+			server.send('$REQUEST_ENTER_ROOM', { id });
+		}
+	}
+
+	onPasswordChange = (name, value) => {
+		this.setState({ password: value });
+	}
+
+	onClickEnter = () => {
+		const { password } = this.state;
+		const { id } = this.props.data;
+		if(!password){
+			alerter.alert('请输入密码');
+			return;
+		}
+		this.setState({password: ''});
+		whevent.call('POPUP', 'ROOM_PASSWORD');
+		server.send('$REQUEST_ENTER_ROOM', { id, password });
+	}
+
 	render() {
 		const { id, name, password, whiteDecks, blackDecks, players, spectators } = this.props.data;
 		const decks = whiteDecks.map(w => ({
@@ -21,8 +59,9 @@ class RoomTag extends Component {
 		})
 
 		return (
-			<div className="RoomTag">
+			<div className="RoomTag" onClick={this.onClick}>
 				<div>
+					{password && <i className="RoomTag-Password icon-lock"></i>}
 					<span className="RoomTag-Id">{id}</span>
 					<h2 className="RoomTag-Name">{name}</h2>
 				</div>
@@ -37,5 +76,3 @@ class RoomTag extends Component {
 		);
 	}
 }
-
-export default RoomTag;

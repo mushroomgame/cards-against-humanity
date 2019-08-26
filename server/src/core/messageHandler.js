@@ -16,6 +16,7 @@ class MessageHandler {
 		whevent.bind('$CHAT', this.onChat, this);
 		whevent.bind('$CREATE_ROOM', this.onCreateRoom, this);
 		whevent.bind('$DECKS', this.onRequestDecks, this);
+		whevent.bind('$REQUEST_ENTER_ROOM', this.onRequestEnterRoom, this);
 	}
 
 	onRequestLobby(player) {
@@ -48,6 +49,17 @@ class MessageHandler {
 		const room = new Room(Lobby.$, roomName || defaultNames[Math.floor(defaultNames.length * Math.random())], password, blackDecks, whiteDecks);
 		room.enter(player);
 		Lobby.$.broadcast('$ROOM_CREATED', room.getRoomShortInfo());
+	}
+
+	onRequestEnterRoom(player, { id, password }) {
+		const room = Room.getRoomById(id);
+		if (!room) {
+			player.send('$ALERT', { message: '该房间不存在！' });
+		} else if (room.password && password !== room.password) {
+			player.send('$ALERT', { message: '密码错误！' });
+		} else {
+			room.enter(player);
+		}
 	}
 }
 

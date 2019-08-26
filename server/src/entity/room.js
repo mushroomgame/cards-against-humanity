@@ -18,7 +18,7 @@ class Room extends Channel {
 		for (let i = 1; ; i++) {
 			if (!roomMap.get(i)) {
 				roomMap.set(i, this);
-				this.id = 1;
+				this.id = i;
 				break;
 			}
 		}
