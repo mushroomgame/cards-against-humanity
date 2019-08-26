@@ -89,6 +89,7 @@ class RoomCreation extends Component {
 			return;
 		}
 
+		whevent.call('LOADING', '正在创建房间...');
 		server.send('$CREATE_ROOM', finalData);
 	}
 

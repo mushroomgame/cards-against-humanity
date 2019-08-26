@@ -1,5 +1,5 @@
-const Channel = require('../entity/channel');
-const Room = require('../entity/room');
+const Channel = require('./channel');
+const Room = require('./room');
 
 class Lobby extends Channel {
 	constructor() {

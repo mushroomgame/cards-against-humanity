@@ -4,8 +4,9 @@ import Chat from '../common/Chat';
 import RoomTag from './lobby/RoomTag';
 import PlayerTag from './lobby/PlayerTag';
 import Button from '../common/Button';
-import Form from '../common/Form';
 import RoomCreation from './lobby/RoomCreation';
+
+import global from '../../services/global';
 
 class Lobby extends Component {
 	state = {
@@ -14,24 +15,49 @@ class Lobby extends Component {
 	}
 
 	componentWillMount() {
-		whevent.bind('$LOBBY', this.onGetLobby, this);
 		whevent.bind('$ENTER', this.onSomeoneEnter, this);
 		whevent.bind('$LEAVE', this.onSomeoneLeave, this);
 
+		whevent.bind('$ROOM_CREATED', this.onRoomCreated, this);
+		whevent.bind('$ROOM_DESTROYED', this.onRoomDestroyed, this);
+		whevent.bind('$ROOM_CHANGED', this.onRoomChanged, this);
+
 		whevent.bind('CREATE_ROOM_CLICKED', this.onClickCreateRoom, this);
+
+		const { rooms, players } = global.lobby;
+		this.setState({ rooms, players });
 	}
 
 	componentWillUnmount() {
-		whevent.unbind('$LOBBY', this.onGetLobby, this);
 		whevent.unbind('$ENTER', this.onSomeoneEnter, this);
 		whevent.unbind('$LEAVE', this.onSomeoneLeave, this);
+
+		whevent.unbind('$ROOM_CREATED', this.onRoomCreated, this);
+		whevent.unbind('$ROOM_DESTROYED', this.onRoomDestroyed, this);
+		whevent.unbind('$ROOM_CHANGED', this.onRoomChanged, this);
 
 		whevent.unbind('CREATE_ROOM_CLICKED', this.onClickCreateRoom, this);
 	}
 
-	onGetLobby({ rooms, players }) {
-		whevent.call('LOADING');
-		this.setState({ rooms, players });
+	onRoomCreated(room) {
+		const rooms = [...this.state.rooms];
+		rooms.push(room);
+		rooms.sort((a, b) => a.id - b.id);
+		this.setState({ rooms });
+	}
+
+	onRoomDestroyed({ id }) {
+		this.setState({ rooms: this.state.rooms.filter(r => r.id !== id) });
+	}
+
+	onRoomChanged(room) {
+		const rooms = [...this.state.rooms];
+		let r = rooms.find(r => r.id === room.id);
+		if (r) {
+			Object.assign(r, room);
+			console.log(rooms);
+			this.setState({ rooms })
+		}
 	}
 
 	onSomeoneEnter(player) {
@@ -42,7 +68,7 @@ class Lobby extends Component {
 		this.setState({ players: this.state.players.filter(p => p.uuid !== player.uuid) });
 	}
 
-	onClickCreateRoom(){
+	onClickCreateRoom() {
 		const popup = <RoomCreation />;
 		whevent.call('POPUP', 'ROOM_CREATION', popup);
 	}
@@ -53,7 +79,7 @@ class Lobby extends Component {
 				<section className="Lobby">
 					<div className="Lobby-LeftPanel">
 						<div className="Lobby-Rooms">{this.state.rooms.map(r =>
-							<RoomTag key={`room_${r.id}`} id={r.id} info={r.info} />
+							<RoomTag key={`room_${r.id}`} data={r} />
 						)}</div>
 					</div>
 					<div className="Lobby-CenterPanel">

@@ -10,6 +10,7 @@ import alerter from '../utils/alerter';
 import TTS from './common/TTS';
 import Popup from './common/Popup';
 import Loading from './common/Loading';
+import Room from './views/Room';
 
 export default class App extends Component {
 
@@ -20,11 +21,15 @@ export default class App extends Component {
 	componentDidMount() {
 		whevent.bind('$$CLOSE', this.onClosed, this);
 		whevent.bind('$LOGGED_IN', this.onLoggedIn, this);
+		whevent.bind('$LOBBY', this.onGetInLobby, this);
+		whevent.bind('$ROOM', this.onGetInRoom, this);
 	}
 
 	componentWillUnmount() {
 		whevent.unbind('$$CLOSE', this.onClosed, this);
 		whevent.unbind('$LOGGED_IN', this.onLoggedIn, this);
+		whevent.unbind('$LOBBY', this.onGetInLobby, this);
+		whevent.unbind('$ROOM', this.onGetInRoom, this);
 	}
 
 	onClosed() {
@@ -36,9 +41,20 @@ export default class App extends Component {
 	onLoggedIn({ uuid, nickname }) {
 		global.uuid = uuid;
 		global.nickname = nickname;
-		this.setState({ phase: 'LOBBY' }, () => {
-			server.send('$LOBBY');
-		});
+		server.send('$LOBBY');
+	}
+
+	onGetInLobby(data){
+		whevent.call('LOADING');
+		global.lobby = data;
+		this.setState({ phase: 'LOBBY' });
+	}
+
+	onGetInRoom(data){
+		whevent.call('LOADING');
+		global.room = data;
+		whevent.call('POPUP');
+		this.setState({ phase: 'ROOM' });
 	}
 
 	renderView() {
@@ -49,7 +65,7 @@ export default class App extends Component {
 			case 'LOBBY':
 				return <Lobby />;
 			case 'ROOM':
-				return null;
+				return <Room />;
 			default:
 				return null;
 		}

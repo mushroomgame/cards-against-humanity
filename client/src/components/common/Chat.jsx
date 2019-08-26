@@ -134,7 +134,7 @@ export default class Chat extends Component {
 									let messages = log.message.split(result[1]);
 									return <dd className="Chat-Log-Message">
 										{messages[0]}
-										<img src={result[1]} />
+										<img src={result[1]} alt="Chat" />
 										{messages[1]}
 									</dd>;
 								} else {

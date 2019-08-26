@@ -45,8 +45,9 @@ class MessageHandler {
 
 	onCreateRoom(player, { roomName, password, whiteDecks, blackDecks }) {
 		const defaultNames = ['小帅哥快来玩呀', '快来干我', 'Do you like Van♂游戏？', '来一起玩'];
-		const room = new Room(roomName || defaultNames[Math.floor(defaultNames.length * Math.random())], password, blackDecks, whiteDecks);
+		const room = new Room(Lobby.$, roomName || defaultNames[Math.floor(defaultNames.length * Math.random())], password, blackDecks, whiteDecks);
 		room.enter(player);
+		Lobby.$.broadcast('$ROOM_CREATED', room.getRoomShortInfo());
 	}
 }
 

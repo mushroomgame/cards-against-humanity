@@ -19,8 +19,10 @@ class Popup extends Component {
 			let popups = this.state.popups.filter(p => p.id !== id);
 			popups.push({ id, element });
 			this.setState({ popups });
-		} else {
+		} else if (id) {
 			this.setState({ popups: this.state.popups.filter(p => p.id !== id) });
+		} else {
+			this.setState({ popups: [] });
 		}
 	}
 
@@ -40,9 +42,9 @@ class Popup extends Component {
 			<section className={`Popup-Container ${this.state.popups.length > 0 ? 'Active' : ''}`}>
 				{this.state.popups.map((p, index) =>
 					<React.Fragment key={`popup_${index}`}>
-						<div className="Popup-BlankArea" onClick={()=>this.onClickBlankArea(p.id)}></div>
+						<div className="Popup-BlankArea" onClick={() => this.onClickBlankArea(p.id)}></div>
 						<div className="Popup" id={`popup_${p.id}`}>
-							<a className="Popup-Close" href="javascript: void(0)" onClick={()=>this.onClickClose(p.id)}><i className="icon-cross"></i></a>
+							<a className="Popup-Close" href="javascript: void(0)" onClick={() => this.onClickClose(p.id)}><i className="icon-cross"></i></a>
 							{p.element}
 						</div>
 					</React.Fragment>

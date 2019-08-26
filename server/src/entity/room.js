@@ -1,12 +1,13 @@
-const Channel = require('../entity/channel');
+const Channel = require('./channel');
 const config = require('config');
 const cardService = require('../services/cardService');
 
 const roomMap = new Map();
 
 class Room extends Channel {
-	constructor(name, password, blackDecks, whiteDecks) {
+	constructor(lobby, name, password, blackDecks, whiteDecks) {
 		super();
+		this.lobby = lobby;
 		this.name = name;
 		this.password = password;
 		this.blackDecks = blackDecks;
@@ -24,10 +25,7 @@ class Room extends Channel {
 	}
 
 	static getRoomList(){
-		return [...roomMap.keys()].map(k => ({
-			id: k,
-			info: roomMap.get(k).getRoomShortInfo()
-		}));
+		return [...roomMap.values()].map(v => v.getRoomShortInfo());
 	}
 
 	static getRoomById(id){
@@ -37,6 +35,7 @@ class Room extends Channel {
 	getRoomShortInfo(){
 		const decks = cardService.getDecksFromCache();
 		return {
+			id: this.id,
 			name: this.name,
 			password: !!this.password,
 			blackDecks: this.blackDecks.map(b => decks.find(d => d.id === b).name),
@@ -49,7 +48,9 @@ class Room extends Channel {
 	getRoomInfo(){
 		const decks = cardService.getDecksFromCache();
 		return {
+			id: this.id,
 			name: this.name,
+			password: !!this.password,
 			blackDecks: this.blackDecks.map(b => decks.find(d => d.id === b).name),
 			whiteDecks: this.whiteDecks.map(w => decks.find(d => d.id === w).name),
 			players: this.gamePlayers.map(p => ({ uuid: p.uuid, nickname: p.nickname })),
@@ -63,11 +64,13 @@ class Room extends Channel {
 			super.enter(player);
 			this.broadcast('$ENTER', { nickname: player.nickname, uuid: player.uuid, spectate: false }, player);
 			player.send('$ROOM', this.getRoomInfo());
+			this.roomChange();
 		} else if (config.get('maxPlayers') === undefined || config.get('maxPlayers') < 0 || this.spectators.length < config.get('maxPlayers')) {
 			this.spectators.push(player);
 			super.enter(player);
 			this.broadcast('$ENTER', { nickname: player.nickname, uuid: player.uuid, spectate: false }, player);
 			player.send('$ROOM', this.getRoomInfo());
+			this.roomChange();
 		} else {
 			player.send('$FULL');
 		}
@@ -77,14 +80,22 @@ class Room extends Channel {
 		this.gamePlayers = this.gamePlayers.filter(p => p !== player);
 		this.spectators = this.spectators.filter(p => p !== player);
 		super.leave(player);
+		this.roomChange();
 
 		if(this.players.length === 0){
 			this.destroy();
 		}
 	}
 
-	destroy(){
+	roomChange(){
+		this.broadcast('$ROOM_CHANGED', this.getRoomInfo());
+		this.lobby.broadcast('$ROOM_CHANGED', this.getRoomShortInfo());
+	}
 
+	destroy(){
+		this.players.forEach(p => this.lobby.enter(p));
+		this.lobby.broadcast('$ROOM_DESTROYED', {id: this.id});
+		roomMap.delete(this.id);
 	}
 
 	broadcastToGamePlayers(signal, data, ...excepts) {
