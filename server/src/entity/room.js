@@ -1,6 +1,6 @@
 const Channel = require('./channel');
 const config = require('config');
-const cardService = require('../services/cardService');
+const { getDecksFromCache } = require('../services/cardService');
 
 const roomMap = new Map();
 
@@ -24,16 +24,16 @@ class Room extends Channel {
 		}
 	}
 
-	static getRoomList(){
+	static getRoomList() {
 		return [...roomMap.values()].map(v => v.getRoomShortInfo());
 	}
 
-	static getRoomById(id){
+	static getRoomById(id) {
 		return roomMap.get(id);
 	}
 
-	getRoomShortInfo(){
-		const decks = cardService.getDecksFromCache();
+	getRoomShortInfo() {
+		const decks = getDecksFromCache();
 		return {
 			id: this.id,
 			name: this.name,
@@ -45,8 +45,8 @@ class Room extends Channel {
 		}
 	}
 
-	getRoomInfo(){
-		const decks = cardService.getDecksFromCache();
+	getRoomInfo() {
+		const decks = getDecksFromCache();
 		return {
 			id: this.id,
 			name: this.name,
@@ -65,7 +65,7 @@ class Room extends Channel {
 			this.broadcast('$ENTER', { nickname: player.nickname, uuid: player.uuid, spectate: false }, player);
 			player.send('$ROOM', this.getRoomInfo());
 			this.roomChange();
-		} else if (config.get('maxPlayers') === undefined || config.get('maxPlayers') < 0 || this.spectators.length < config.get('maxPlayers')) {
+		} else if (config.get('maxSpectators') === undefined || config.get('maxSpectators') < 0 || this.spectators.length < config.get('maxSpectators')) {
 			this.spectators.push(player);
 			super.enter(player);
 			this.broadcast('$ENTER', { nickname: player.nickname, uuid: player.uuid, spectate: false }, player);
@@ -82,19 +82,19 @@ class Room extends Channel {
 		super.leave(player);
 		this.roomChange();
 
-		if(this.players.length === 0){
+		if (this.players.length === 0) {
 			this.destroy();
 		}
 	}
 
-	roomChange(){
+	roomChange() {
 		this.broadcast('$ROOM_CHANGED', this.getRoomInfo());
 		this.lobby.broadcast('$ROOM_CHANGED', this.getRoomShortInfo());
 	}
 
-	destroy(){
+	destroy() {
 		this.players.forEach(p => this.lobby.enter(p));
-		this.lobby.broadcast('$ROOM_DESTROYED', {id: this.id});
+		this.lobby.broadcast('$ROOM_DESTROYED', { id: this.id });
 		roomMap.delete(this.id);
 	}
 

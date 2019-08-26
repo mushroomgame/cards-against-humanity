@@ -3,7 +3,7 @@ const Player = require('../entity/player');
 const Lobby = require('../entity/lobby');
 const Room = require('../entity/room');
 
-const { getDecks } = require('../services/cardService');
+const { getDecksFromCache } = require('../services/cardService');
 
 class MessageHandler {
 	start() {
@@ -29,9 +29,8 @@ class MessageHandler {
 		}
 	}
 
-	async onRequestDecks(player) {
-		const decks = await getDecks();
-		player.send('$DECKS', decks);
+	onRequestDecks(player) {
+		player.send('$DECKS', getDecksFromCache());
 	}
 
 	onLogin(player, { nickname }) {

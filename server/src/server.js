@@ -3,6 +3,7 @@ const config = require('config');
 const http = require('http');
 const express = require('express');
 const whevent = require('whevent');
+const cardService = require('./services/cardService');
 
 const MessageHandler = require('./core/messageHandler');
 
@@ -12,7 +13,7 @@ const Lobby = require('./entity/lobby');
 const port = config.get('port');
 
 class Server {
-	start() {
+	async start() {
 		const app = express();
 		const httpServer = http.createServer(app);
 		httpServer.listen(process.env.PORT || port);
@@ -32,6 +33,7 @@ class Server {
 		const messageHandler = new MessageHandler();
 		messageHandler.start();
 		new Lobby();
+		await cardService.getDecks();
 		console.log(`WebSocket server is listening on port ${port}...`);
 	}
 
