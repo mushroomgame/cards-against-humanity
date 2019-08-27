@@ -1,0 +1,19 @@
+.Timer {
+	--percentage: 0.2;
+	height: 2.4rem;
+	width: 100%;
+	background-color: #333;
+	margin-top: 0.5rem;
+	border-radius: 0.5rem;
+	position: relative;
+	overflow: hidden;
+
+	&::after {
+		content: '';
+		display: block;
+		height: 100%;
+		left: 0;
+		background-color: hsl(calc(var(--percentage) * 120deg), 30%, 60%);
+		width: calc(var(--percentage) * 100%);
+	}
+}

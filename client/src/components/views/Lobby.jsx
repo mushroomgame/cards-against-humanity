@@ -86,7 +86,7 @@ class Lobby extends Component {
 						<Chat />
 					</div>
 					<div className="Lobby-RightPanel">
-						<div className="Lobby-Players">{this.state.players.map((p, index) =>
+						<div className="Lobby-Players" data-title="玩家列表">{this.state.players.map((p, index) =>
 							<PlayerTag key={`player_${index}`} player={p} />
 						)}</div>
 						<div className="Lobby-Settings">
