@@ -118,13 +118,19 @@
 		margin-top: 1rem;
 
 		.Input {
-			margin-right: 1rem;
+			margin: 0 0.5rem;
 		}
 
 		.Button {
+			display: flex;
+			justify-content: center;
+			align-items: center;
 			font-size: 1.6rem;
 			padding: 0.25rem 1rem;
 			margin-bottom: 4px;
+			i {
+				margin: 0;
+			}
 		}
 	}
 }

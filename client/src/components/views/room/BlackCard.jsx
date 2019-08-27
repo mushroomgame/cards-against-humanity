@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 
 const BlackCard = ({ text, replacements, preview }) => {
+	text = text || '';
 	let arr = text.split('_');
 	let t = arr.map((s, index) => <React.Fragment key={`text_${index}`}>
 		{s && <span className="BlackCard-Text">{s}</span>}

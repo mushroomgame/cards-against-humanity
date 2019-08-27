@@ -53,24 +53,27 @@ class Room extends Channel {
 			password: !!this.password,
 			blackDecks: this.blackDecks.map(b => decks.find(d => d.id === b).name),
 			whiteDecks: this.whiteDecks.map(w => decks.find(d => d.id === w).name),
-			players: this.gamePlayers.map(p => ({ uuid: p.uuid, nickname: p.nickname })),
+			players: this.gamePlayers.map(p => ({ uuid: p.uuid, nickname: p.nickname, host: this.host === p })),
 			spectators: this.spectators.map(p => ({ uuid: p.uuid, nickname: p.nickname })),
 		}
 	}
 
 	enter(player, spectate) {
 		if (!spectate && this.gamePlayers.length < (config.get('maxPlayers') || 8)) {
+			if (!this.host) {
+				this.host = player;
+			}
 			this.gamePlayers.push(player);
 			super.enter(player);
-			this.broadcast('$ENTER', { nickname: player.nickname, uuid: player.uuid, spectate: false }, player);
+			this.broadcast('$ENTER', { nickname: player.nickname, uuid: player.uuid, spectate: false, host: this.host === player }, player);
 			player.send('$ROOM', this.getRoomInfo());
-			this.roomChange();
+			this.roomChange(true);
 		} else if (config.get('maxSpectators') === undefined || config.get('maxSpectators') < 0 || this.spectators.length < config.get('maxSpectators')) {
 			this.spectators.push(player);
 			super.enter(player);
-			this.broadcast('$ENTER', { nickname: player.nickname, uuid: player.uuid, spectate: false }, player);
+			this.broadcast('$ENTER', { nickname: player.nickname, uuid: player.uuid, spectate: true, host: false }, player);
 			player.send('$ROOM', this.getRoomInfo());
-			this.roomChange();
+			this.roomChange(true);
 		} else {
 			player.send('$FULL');
 		}
@@ -80,15 +83,23 @@ class Room extends Channel {
 		this.gamePlayers = this.gamePlayers.filter(p => p !== player);
 		this.spectators = this.spectators.filter(p => p !== player);
 		super.leave(player);
-		this.roomChange();
+		this.roomChange(true);
+		this.broadcast('$LEAVE', { uuid: player.uuid, nickname: player.nickname }, player);
 
 		if (this.players.length === 0) {
 			this.destroy();
+		} else if (this.host === player) {
+			if (this.gamePlayers.length > 0) {
+				this.host = this.gamePlayers[0];
+				this.broadcast('$HOST', { uuid: this.host.uuid, nickname: this.host.nickname });
+			}
 		}
 	}
 
-	roomChange() {
-		this.broadcast('$ROOM_CHANGED', this.getRoomInfo());
+	roomChange(lobbyOnly) {
+		if (lobbyOnly) {
+			this.broadcast('$ROOM_CHANGED', this.getRoomInfo());
+		}
 		this.lobby.broadcast('$ROOM_CHANGED', this.getRoomShortInfo());
 	}
 

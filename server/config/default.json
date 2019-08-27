@@ -1,5 +1,6 @@
 {
 	"port": 2333,
 	"maxPlayers": 8,
-	"maxSpectators": -1
+	"maxSpectators": -1,
+	"apiBase": "https://cah.nut.moe"
 }

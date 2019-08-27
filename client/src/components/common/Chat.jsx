@@ -17,30 +17,44 @@ export default class Chat extends Component {
 	state = {
 		logs: [],
 		message: '',
-		lastShowTime: null
+		lastShowTime: null,
+		mute: global.mute
 	}
 
 	componentWillMount() {
 		whevent.bind('$CHAT', this.onReceiveChat, this);
 		whevent.bind('$ENTER', this.onPlayerEnter, this);
 		whevent.bind('$LEAVE', this.onPlayerLeave, this);
+		whevent.bind('$HOST', this.onHostChange, this);
 	}
 
 	componentWillUnmount() {
 		whevent.unbind('$CHAT', this.onReceiveChat, this);
 		whevent.unbind('$ENTER', this.onPlayerEnter, this);
 		whevent.unbind('$LEAVE', this.onPlayerLeave, this);
+		whevent.unbind('$HOST', this.onHostChange, this);
+	}
+
+	onHostChange({ nickname }) {
+		this.addLog({
+			speaker: '系统',
+			message: `房主是 ${nickname}`,
+			from: 'System'
+		});
 	}
 
 	onReceiveChat({ player, message }) {
-		
 		const regex = /((http(s?):)\/\/.*\.(?:jpg|gif|png|jpeg|svg))/g;
 		let result = regex.exec(message);
 		if (result) {
 			let messages = message.split(result[1]);
-			whevent.call('READ', messages[0] + messages[1], 'user');
+			if (!this.state.mute) {
+				whevent.call('READ', messages[0] + messages[1], 'user');
+			}
 		} else {
-			whevent.call('READ', message, 'user');
+			if (!this.state.mute) {
+				whevent.call('READ', message, 'user');
+			}
 		}
 
 		this.addLog({
@@ -94,6 +108,11 @@ export default class Chat extends Component {
 		server.send('$CHAT', { message: this.state.message });
 	}
 
+	onClickMute = () => {
+		global.mute = !global.mute;
+		this.setState({ mute: global.mute });
+	}
+
 	onMessageChange = message => {
 		this.setState({ message });
 	}
@@ -107,14 +126,14 @@ export default class Chat extends Component {
 			e.preventDefault();
 			pointer = Math.max(pointer - 1, 0);
 			const message = sentMessages[pointer];
-			if(message) {
+			if (message) {
 				this.setState({ message });
 			}
 		} else if (key === 'ArrowDown') {
 			e.preventDefault();
 			pointer = Math.min(pointer + 1, sentMessages.length - 1);
 			const message = sentMessages[pointer];
-			if(message) {
+			if (message) {
 				this.setState({ message });
 			}
 		}
@@ -148,6 +167,7 @@ export default class Chat extends Component {
 					</dl>
 				)}</div>
 				<div className="Chat-InputArea">
+					<Button onClick={this.onClickMute}><i className={this.state.mute ? "icon-volume-mute2" : "icon-volume-medium"}></i></Button>
 					<Input onKeyDown={this.onKeyPress} onChange={this.onMessageChange} value={this.state.message} />
 					<Button onClick={this.onClickSend}>发送</Button>
 				</div>

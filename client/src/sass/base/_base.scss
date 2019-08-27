@@ -24,7 +24,8 @@ html {
 	}
 }
 
-input[type='text'], input[type='password'] {
+input[type='text'],
+input[type='password'] {
 	font-size: inherit;
 }
 
@@ -43,4 +44,19 @@ input[type='text'], input[type='password'] {
 		font-weight: bold;
 		color: #666;
 	}
+}
+
+@mixin icon {
+	/* use !important to prevent issues with browser extensions that change fonts */
+	font-family: 'icomoon' !important;
+	speak: none;
+	font-style: normal;
+	font-weight: normal;
+	font-variant: normal;
+	text-transform: none;
+	line-height: 1;
+
+	/* Better Font Rendering =========== */
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
 }

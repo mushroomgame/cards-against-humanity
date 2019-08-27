@@ -1,4 +1,6 @@
 const cache = require('../core/cache');
+const config = require('config');
+const http = require('../core/http');
 
 function getDecks() {
 	return new Promise((resolve, reject) => {
@@ -12,11 +14,31 @@ function getDecks() {
 	});
 }
 
+async function getBlackCards(force) {
+	if (!force && cache.blackCards) {
+		return cache.blackCards;
+	} else {
+		cache.blackCards = await http.get(config.get('apiBase') + '/blackcards');
+		return cache.blackCards;
+	}
+}
+
+async function getWhiteCards(force) {
+	if (!force && cache.whiteCards) {
+		return cache.whiteCards;
+	} else {
+		cache.whiteCards = await http.get(config.get('apiBase') + '/whitecards');
+		return cache.whiteCards;
+	}
+}
+
 function getDecksFromCache() {
 	return cache.decks;
 }
 
 module.exports = {
 	getDecks,
-	getDecksFromCache
+	getDecksFromCache,
+	getBlackCards,
+	getWhiteCards
 };
