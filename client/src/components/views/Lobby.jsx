@@ -2,11 +2,11 @@ import React, { Component } from 'react';
 import whevent from 'whevent';
 import Chat from '../common/Chat';
 import RoomTag from './lobby/RoomTag';
-import PlayerTag from './lobby/PlayerTag';
 import Button from '../common/Button';
 import RoomCreation from './lobby/RoomCreation';
 
 import global from '../../services/global';
+import PlayerList from '../common/PlayerList';
 
 class Lobby extends Component {
 	state = {
@@ -86,9 +86,9 @@ class Lobby extends Component {
 						<Chat />
 					</div>
 					<div className="Lobby-RightPanel">
-						<div className="Lobby-Players" data-title="玩家列表">{this.state.players.map((p, index) =>
-							<PlayerTag key={`player_${index}`} player={p} />
-						)}</div>
+						<div className="Lobby-Players" data-title="玩家列表">
+							<PlayerList players={this.state.players} />
+						</div>
 						<div className="Lobby-Settings">
 							<Button className="Button_Wide" event="CREATE_ROOM_CLICKED"><i className="icon-plus"></i>创建房间</Button>
 							<Button className="Button_Wide" event="CREATE_CARD_CLICKED"><i className="icon-upload2"></i>制作卡牌</Button>

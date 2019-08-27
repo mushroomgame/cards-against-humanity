@@ -10,6 +10,7 @@ import Button from '../common/Button';
 
 import server from '../../services/server';
 import alerter from '../../utils/alerter';
+import PlayerList from '../common/PlayerList';
 
 export default class Room extends Component {
 	state = {}
@@ -114,12 +115,12 @@ export default class Room extends Component {
 					<div className="Room-HandArea" data-title="手牌"></div>
 				</div>
 				<div className="Room-RightPanel">
-					<div className="Room-Players" data-title="玩家列表">{players.map(p =>
-						<div className={`Room-Players-PlayerTag${p.host ? ' Room-Players-PlayerTag_Host' : ''}`} key={`player_${p.uuid}`}>{p.nickname}</div>
-					)}</div>
-					<div className="Room-Spectators" data-title="观众">{spectators.map(p =>
-						<div className={`Room-Spectators-PlayerTag`} key={`player_${p.uuid}`}>{p.nickname}</div>
-					)}</div>
+					<div className="Room-Players" data-title="玩家列表">
+						<PlayerList players={this.state.players} />
+					</div>
+					<div className="Room-Spectators" data-title="观众">
+						<PlayerList players={this.state.spectators} />
+					</div>
 					<div className="Room-Settings">
 						<Button><i className="icon-cog"></i></Button>
 						<Button onClick={this.onClickSpectate}>{this.isSpectating() ? <i className="icon-arrow-up"></i> : <i className="icon-eye-plus"></i>}</Button>
