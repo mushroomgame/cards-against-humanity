@@ -9,6 +9,7 @@ import whevent from 'whevent';
 import Button from '../common/Button';
 
 import server from '../../services/server';
+import alerter from '../../utils/alerter';
 
 export default class Room extends Component {
 	state = {}
@@ -17,6 +18,8 @@ export default class Room extends Component {
 		whevent.bind('$ENTER', this.onSomeoneEnter, this);
 		whevent.bind('$LEAVE', this.onSomeoneLeave, this);
 		whevent.bind('$HOST', this.onHostChange, this);
+		whevent.bind('$JOIN', this.onJoin, this);
+		whevent.bind('$SPECTATE', this.onSpectate, this);
 
 
 		const { id, name, password, blackDecks, whiteDecks, players, spectators } = global.room;
@@ -27,11 +30,29 @@ export default class Room extends Component {
 		whevent.unbind('$ENTER', this.onSomeoneEnter, this);
 		whevent.unbind('$LEAVE', this.onSomeoneLeave, this);
 		whevent.unbind('$HOST', this.onHostChange, this);
+		whevent.unbind('$JOIN', this.onJoin, this);
+		whevent.unbind('$SPECTATE', this.onSpectate, this);
+	}
+
+	isSpectating() {
+		return !!this.state.spectators.find(p => p.uuid === global.uuid);
 	}
 
 	onClickExit = () => {
 		whevent.call('LOADING', '载入中...');
 		server.send('$LOBBY');
+	}
+
+	onClickSpectate = () => {
+		if (this.isSpectating()) {
+			if (this.state.players.length >= 8) {
+				alerter.alert('玩家已满，无法加入！');
+			} else {
+				server.send('$JOIN');
+			}
+		} else {
+			server.send('$SPECTATE');
+		}
 	}
 
 	onSomeoneEnter(player) {
@@ -49,6 +70,22 @@ export default class Room extends Component {
 			player.host = true;
 			this.setState({ players });
 		}
+	}
+
+	onJoin(player) {
+		player.spectate = false;
+		const players = [...this.state.players];
+		const spectators = [...this.state.spectators].filter(p => p.uuid !== player.uuid);
+		players.push(player);
+		this.setState({ players, spectators });
+	}
+
+	onSpectate(player) {
+		player.spectate = true;
+		const players = [...this.state.players].filter(p => p.uuid !== player.uuid);
+		const spectators = [...this.state.spectators];
+		spectators.push(player);
+		this.setState({ players, spectators });
 	}
 
 	render() {
@@ -83,8 +120,9 @@ export default class Room extends Component {
 					<div className="Room-Spectators" data-title="观众">{spectators.map(p =>
 						<div className={`Room-Spectators-PlayerTag`} key={`player_${p.uuid}`}>{p.nickname}</div>
 					)}</div>
-					<div  className="Room-Settings">
+					<div className="Room-Settings">
 						<Button><i className="icon-cog"></i></Button>
+						<Button onClick={this.onClickSpectate}>{this.isSpectating() ? <i className="icon-arrow-up"></i> : <i className="icon-eye-plus"></i>}</Button>
 						<Button onClick={this.onClickExit}><i className="icon-exit"></i></Button>
 					</div>
 				</div>

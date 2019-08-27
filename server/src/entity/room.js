@@ -58,22 +58,42 @@ class Room extends Channel {
 		}
 	}
 
-	enter(player, spectate) {
-		if (!spectate && this.gamePlayers.length < (config.get('maxPlayers') || 8)) {
+	isGamePlayersFull() {
+		return this.gamePlayers.length >= (config.get('maxPlayers') || 8);
+	}
+
+	isSpectatorsFull() {
+		return config.get('maxSpectators') >= 0 && this.spectators.length >= config.get('maxSpectators');
+	}
+
+	checkHost() {
+		if(!this.gamePlayers.includes(this.host)){
+			this.host = null;
+		}
+
+		if (this.gamePlayers.length > 0) {
 			if (!this.host) {
-				this.host = player;
+				this.host = this.gamePlayers[0];
+				this.broadcast('$HOST', { uuid: this.host.uuid, nickname: this.host.nickname });
 			}
+		}
+	}
+
+	enter(player, spectate) {
+		if (!spectate && !this.isGamePlayersFull()) {
 			this.gamePlayers.push(player);
 			super.enter(player);
 			this.broadcast('$ENTER', { nickname: player.nickname, uuid: player.uuid, spectate: false, host: this.host === player }, player);
 			player.send('$ROOM', this.getRoomInfo());
 			this.roomChange(true);
-		} else if (config.get('maxSpectators') === undefined || config.get('maxSpectators') < 0 || this.spectators.length < config.get('maxSpectators')) {
+			this.checkHost();
+		} else if (!this.isSpectatorsFull()) {
 			this.spectators.push(player);
 			super.enter(player);
 			this.broadcast('$ENTER', { nickname: player.nickname, uuid: player.uuid, spectate: true, host: false }, player);
 			player.send('$ROOM', this.getRoomInfo());
 			this.roomChange(true);
+			this.checkHost();
 		} else {
 			player.send('$FULL');
 		}
@@ -85,14 +105,34 @@ class Room extends Channel {
 		super.leave(player);
 		this.roomChange(true);
 		this.broadcast('$LEAVE', { uuid: player.uuid, nickname: player.nickname }, player);
+		this.checkHost();
 
 		if (this.players.length === 0) {
 			this.destroy();
-		} else if (this.host === player) {
-			if (this.gamePlayers.length > 0) {
-				this.host = this.gamePlayers[0];
-				this.broadcast('$HOST', { uuid: this.host.uuid, nickname: this.host.nickname });
-			}
+		}
+	}
+
+	joinGamers(player) {
+		if (!this.isGamePlayersFull()) {
+			this.spectators = this.spectators.filter(p => p !== player);
+			this.gamePlayers.push(player);
+			this.broadcast('$JOIN', { uuid: player.uuid, nickname: player.nickname });
+			this.checkHost();
+			this.roomChange(true);
+		} else {
+			player.send('$ALERT', '玩家已满，无法加入！');
+		}
+	}
+
+	spectate(player) {
+		if (!this.isSpectatorsFull()) {
+			this.gamePlayers = this.gamePlayers.filter(p => p !== player);
+			this.spectators.push(player);
+			this.broadcast('$SPECTATE', { uuid: player.uuid, nickname: player.nickname });
+			this.checkHost();
+			this.roomChange(true);
+		} else {
+			player.send('$ALERT', '观众已满，无法加入！');
 		}
 	}
 

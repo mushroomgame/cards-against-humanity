@@ -17,6 +17,24 @@ class MessageHandler {
 		whevent.bind('$CREATE_ROOM', this.onCreateRoom, this);
 		whevent.bind('$DECKS', this.onRequestDecks, this);
 		whevent.bind('$REQUEST_ENTER_ROOM', this.onRequestEnterRoom, this);
+		whevent.bind('$SPECTATE', this.onRequestSpectate, this);
+		whevent.bind('$JOIN', this.onRequestJoin, this);
+	}
+
+	onRequestJoin(player) {
+		if (player.channel && player.channel.joinGamers) {
+			player.channel.joinGamers(player);
+		} else {
+			player.send('$ALERT', '未知错误');
+		}
+	}
+
+	onRequestSpectate(player) {
+		if (player.channel && player.channel.spectate) {
+			player.channel.spectate(player);
+		} else {
+			player.send('$ALERT', '未知错误');
+		}
 	}
 
 	onRequestLobby(player) {

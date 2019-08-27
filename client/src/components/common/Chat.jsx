@@ -26,6 +26,8 @@ export default class Chat extends Component {
 		whevent.bind('$ENTER', this.onPlayerEnter, this);
 		whevent.bind('$LEAVE', this.onPlayerLeave, this);
 		whevent.bind('$HOST', this.onHostChange, this);
+		whevent.bind('$SPECTATE', this.onSpectate, this);
+		whevent.bind('$JOIN', this.onJoin, this);
 	}
 
 	componentWillUnmount() {
@@ -33,6 +35,24 @@ export default class Chat extends Component {
 		whevent.unbind('$ENTER', this.onPlayerEnter, this);
 		whevent.unbind('$LEAVE', this.onPlayerLeave, this);
 		whevent.unbind('$HOST', this.onHostChange, this);
+		whevent.unbind('$SPECTATE', this.onSpectate, this);
+		whevent.unbind('$JOIN', this.onJoin, this);
+	}
+
+	onSpectate({nickname}){
+		this.addLog({
+			speaker: '系统',
+			message: `${nickname} 开始观战`,
+			from: 'System'
+		});
+	}
+
+	onJoin({nickname}){
+		this.addLog({
+			speaker: '系统',
+			message: `${nickname} 加入了游戏`,
+			from: 'System'
+		});
 	}
 
 	onHostChange({ nickname }) {
