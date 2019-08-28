@@ -20,6 +20,15 @@ class MessageHandler {
 		whevent.bind('$SPECTATE', this.onRequestSpectate, this);
 		whevent.bind('$JOIN', this.onRequestJoin, this);
 		whevent.bind('$START', this.onRequestStart, this);
+		whevent.bind('$PICK', this.onPickCard, this);
+	}
+
+	onPickCard(player, cards) {
+		if (player.channel && player.channel instanceof Room) {
+			player.channel.pickCards(player, cards);
+		} else {
+			player.send('$ALERT', '未知错误');
+		}
 	}
 
 	onRequestStart(player) {

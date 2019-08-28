@@ -1,8 +1,9 @@
 const cardService = require('../services/cardService');
 
 class Game {
-	constructor(blackDeck, whiteDeck) {
+	constructor(room, blackDeck, whiteDeck) {
 		console.log(blackDeck, whiteDeck);
+		this.room = room;
 		this.blackDeck = blackDeck;
 		this.whiteDeck = whiteDeck;
 		this.blackCards = [...this.blackDeck];
@@ -13,7 +14,42 @@ class Game {
 		this.shuffle(true);
 		this.shuffle(false);
 		this.round = 0;
-		this.phase = 'STOPPED';	// STOPPED, CHOOSING, JUDGING, SHOWING
+		this.czar = null;
+		this.czarIndex = 0;
+		this.phase = 'STOPPED';	// STOPPED, PICKING, JUDGING, SHOWING
+	}
+
+	start() {
+		this.round++;
+		this.currentRoundPlayers = [...this.room.gamePlayers];
+		this.pickedCards = new Map();
+
+		let blackCard = this.getBlackCard();
+		this.phase = 'PICKING';
+		this.czarIndex--;
+		if (this.czarIndex < 0) {
+			this.czarIndex = this.room.gamePlayers.length - 1;
+		}
+		this.czar = this.room.gamePlayers[this.czarIndex];
+
+		this.room.broadcast('$NEW_ROUND', { blackCard, czar: { uuid: this.czar.uuid, nickname: this.czar.nickname } });
+		this.dealWhiteCards(...this.room.gamePlayers);
+
+		// let round = this.round;
+		// setTimeout(()=>{
+		// 	if(this.round === round && this.phase === 'PICKING'){
+
+		// 	}
+		// }, 5000);
+	}
+
+	judging() {
+		let data = [];
+		[...this.pickedCards.keys()].forEach(key => {
+			let cards = this.pickedCards.get(key);
+			data.push({ uuid: key, cards });
+		})
+		this.room.broadcast('$JUDGING', data);
 	}
 
 	shuffle(black) {
@@ -52,10 +88,29 @@ class Game {
 		return card;
 	}
 
-	returnWhiteCard(id) {
-		let card = this.whiteDeck.find(c => c._id === id);
-		if (card) {
-			this.playedWhiteCards.push(card);
+	pickWhiteCards(player, cards) {
+		let hands = this.getHandCards(player);
+		if (hands) {
+			hands = hands.filter(h => !cards.find(c => c._id === h._id));
+			this.hands.set(player.uuid, hands);
+		}
+
+		let pickedCards = [];
+
+		cards.forEach(card => {
+			let card = this.whiteDeck.find(c => c._id === card._id);
+			pickedCards.push(card);
+			if (card) {
+				this.playedWhiteCards.push(card);
+			}
+		});
+
+		this.room.broadcast('$PICKED', { player: { uuid: player.uuid, nickname: player.nickname } });
+
+		this.pickedCards.set(player.uuid, pickedCards);
+
+		if (this.pickedCards.size >= this.currentRoundPlayers.length - 1) {
+			this.judging();
 		}
 	}
 

@@ -18,7 +18,10 @@ export default class Room extends Component {
 		started: false,
 		whiteCards: [],
 		blackCard: null,
-		choosen: []
+		blanks: 0,
+		chosen: [],
+		peek: null,
+		czar: null
 	}
 
 	componentWillMount() {
@@ -28,7 +31,7 @@ export default class Room extends Component {
 		whevent.bind('$JOIN', this.onJoin, this);
 		whevent.bind('$SPECTATE', this.onSpectate, this);
 		whevent.bind('$START', this.onGameStart, this);
-		whevent.bind('$BLACK', this.onGetBlackCard, this);
+		whevent.bind('$NEW_ROUND', this.onNewRound, this);
 		whevent.bind('$WHITE', this.onGetWhiteCards, this);
 
 
@@ -43,12 +46,18 @@ export default class Room extends Component {
 		whevent.unbind('$JOIN', this.onJoin, this);
 		whevent.unbind('$SPECTATE', this.onSpectate, this);
 		whevent.unbind('$START', this.onGameStart, this);
-		whevent.unbind('$BLACK', this.onGetBlackCard, this);
+		whevent.unbind('$NEW_ROUND', this.onNewRound, this);
 		whevent.unbind('$WHITE', this.onGetWhiteCards, this);
 	}
 
-	onGetBlackCard(card) {
-		this.setState({ blackCard: card });
+	onNewRound({ blackCard, czar }) {
+		const players = [...this.state.players];
+		players.forEach(p => p.czar = false);
+		let player = players.find(p => p.uuid === czar.uuid);
+		if (player) {
+			player.czar = true;
+		}
+		this.setState({ blackCard, blanks: blackCard.text.split('_').length - 1, players });
 	}
 
 	onGetWhiteCards(cards) {
@@ -92,7 +101,7 @@ export default class Room extends Component {
 		this.setState({ players, spectators });
 	}
 
-	isSpectating() {
+	isMeSpectating() {
 		return !!this.state.spectators.find(p => p.uuid === global.uuid);
 	}
 
@@ -100,6 +109,28 @@ export default class Room extends Component {
 		let host = this.state.players.find(p => p.host);
 		if (host) {
 			return host.uuid === global.uuid;
+		}
+	}
+
+	isMeCzar() {
+		let player = this.state.players.find(p => p.czar);
+		if (player) {
+			return player.uuid === global.uuid;
+		}
+	}
+
+	onChooseCard(card) {
+		if (this.state.chosen.length >= this.state.blanks) {
+			return;
+		} else if (this.state.chosen.includes(card)) {
+			this.setState({ chosen: this.state.chosen.filter(c => c !== card) });
+		} else {
+			this.setState({ chosen: [...this.state.chosen, card] }, () => {
+				if (this.state.chosen.length >= this.state.blanks) {
+					this.setState({ whiteCards: this.state.whiteCards.filter(c => !this.state.chosen.includes(c)) })
+					server.send('$PICK', this.state.chosen.map(c => ({ _id: c._id })));
+				}
+			});
 		}
 	}
 
@@ -120,7 +151,7 @@ export default class Room extends Component {
 	}
 
 	onClickSpectate = () => {
-		if (this.isSpectating()) {
+		if (this.isMeSpectating()) {
 			if (this.state.players.length >= 8) {
 				alerter.alert('玩家已满，无法加入！');
 			} else {
@@ -132,7 +163,7 @@ export default class Room extends Component {
 	}
 
 	render() {
-		const { id, name, password, blackDecks, whiteDecks, players, spectators, started, blackCard, whiteCards } = this.state;
+		const { id, name, password, blackDecks, whiteDecks, players, spectators, started, blackCard, whiteCards, chosen, peek } = this.state;
 		return (
 			<section className="Room">
 				<div className="Room-LeftPanel">
@@ -143,7 +174,13 @@ export default class Room extends Component {
 							<h2 className="Room-Info-Name">{name}</h2>
 						</div>
 						{/* <BlackCard text="_还是_玩得好啊。" replacements={['奶奶']} preview={true} /> */}
-						{blackCard ? <BlackCard text={blackCard.text} /> : <BlackCard />}
+						{blackCard ?
+							<BlackCard
+								text={blackCard.text}
+								replacements={chosen.map(c => c.text)}
+								peek={peek && peek.text}
+								preview={true}
+							/> : <BlackCard />}
 						{!started && this.isMeHost() && <Button onClick={this.onClickStartGame} className="Room-StartButton" color="#c87">开始游戏</Button>}
 						<Timer percentage={1} />
 					</div>
@@ -155,8 +192,15 @@ export default class Room extends Component {
 					<div className="Room-PlayArea" data-title="出牌区域"></div>
 				</div>
 				<div className="Room-MiddleRightPanel">
-					<div className="Room-HandArea" data-title="手牌">{whiteCards.map(card =>
-						<WhiteCard key={`whitecard_${card._id}`}>{card.text}</WhiteCard>
+					<div className={`Room-HandArea${this.isMeCzar() ? ' Room-HandArea_Disabled' : ''}`} data-title="手牌">{whiteCards.map(card =>
+						<WhiteCard
+							onMouseEnter={() => this.setState({ peek: card })}
+							onMouseLeave={() => this.setState({ peek: null })}
+							onClick={() => this.onChooseCard(card)}
+							key={`whitecard_${card._id}`}
+						>
+							{card.text}
+						</WhiteCard>
 					)}</div>
 				</div>
 				<div className="Room-RightPanel">
@@ -168,7 +212,7 @@ export default class Room extends Component {
 					</div>
 					<div className="Room-Settings">
 						<Button color="#999"><i className="icon-cog"></i></Button>
-						<Button onClick={this.onClickSpectate} color="#999">{this.isSpectating() ? <i className="icon-arrow-up"></i> : <i className="icon-eye-plus"></i>}</Button>
+						<Button onClick={this.onClickSpectate} color="#999">{this.isMeSpectating() ? <i className="icon-arrow-up"></i> : <i className="icon-eye-plus"></i>}</Button>
 						<Button onClick={this.onClickExit} color="#999"><i className="icon-exit"></i></Button>
 					</div>
 				</div>

@@ -34,10 +34,20 @@ class Room extends Channel {
 		} else {
 			// this.game = new Game(this.blackDecks, this.whiteDecks);
 			this.broadcast('$START');
-			this.game = new Game(await cardService.getBlackCards(), await cardService.getWhiteCards());
-			let blackCard = this.game.getBlackCard();
-			this.broadcast('$BLACK', blackCard);
-			this.game.dealWhiteCards(...this.gamePlayers);
+			this.game = new Game(this, await cardService.getBlackCards(), await cardService.getWhiteCards());
+			this.game.start();
+		}
+	}
+
+	pickCards(player, cards) {
+		if (this.game && this.game.phase === 'PICKING') {
+			if (this.game.czar !== player) {
+				this.game.pickWhiteCards(player, cards);
+			} else {
+				player.send('$ALERT', '裁判无法出卡');
+			}
+		} else {
+			player.send('$ALERT', '本局已经结束了');
 		}
 	}
 
