@@ -97,15 +97,15 @@ class Game {
 
 		let pickedCards = [];
 
-		cards.forEach(card => {
-			let card = this.whiteDeck.find(c => c._id === card._id);
+		cards.forEach(_c => {
+			let card = this.whiteDeck.find(c => c._id === _c._id);
 			pickedCards.push(card);
 			if (card) {
 				this.playedWhiteCards.push(card);
 			}
 		});
 
-		this.room.broadcast('$PICKED', { player: { uuid: player.uuid, nickname: player.nickname } });
+		this.room.broadcast('$PICKED', { uuid: player.uuid, nickname: player.nickname });
 
 		this.pickedCards.set(player.uuid, pickedCards);
 

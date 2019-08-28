@@ -18,6 +18,7 @@ export default class Room extends Component {
 		started: false,
 		whiteCards: [],
 		blackCard: null,
+		completedPick: false,
 		blanks: 0,
 		chosen: [],
 		peek: null,
@@ -33,7 +34,7 @@ export default class Room extends Component {
 		whevent.bind('$START', this.onGameStart, this);
 		whevent.bind('$NEW_ROUND', this.onNewRound, this);
 		whevent.bind('$WHITE', this.onGetWhiteCards, this);
-
+		whevent.bind('$PICKED', this.onPlayerPicked, this);
 
 		const { id, name, password, blackDecks, whiteDecks, players, spectators } = global.room;
 		this.setState({ id, name, password, blackDecks, whiteDecks, players, spectators });
@@ -48,6 +49,7 @@ export default class Room extends Component {
 		whevent.unbind('$START', this.onGameStart, this);
 		whevent.unbind('$NEW_ROUND', this.onNewRound, this);
 		whevent.unbind('$WHITE', this.onGetWhiteCards, this);
+		whevent.unbind('$PICKED', this.onPlayerPicked, this);
 	}
 
 	onNewRound({ blackCard, czar }) {
@@ -57,7 +59,20 @@ export default class Room extends Component {
 		if (player) {
 			player.czar = true;
 		}
-		this.setState({ blackCard, blanks: blackCard.text.split('_').length - 1, players });
+		this.setState({ blackCard, blanks: blackCard.text.split('_').length - 1, players, completedPick: false, czar });
+	}
+
+	onPlayerPicked({ uuid, nickname }) {
+		if (uuid === global.uuid) {
+			whevent.call('LOADING');
+			this.setState({ whiteCards: this.state.whiteCards.filter(w => !this.state.chosen.find(c => c._id === w._id)), chosen: [], completedPick: true });
+		}
+		const players = [...this.state.players];
+		const player = players.find(p => p.uuid === uuid);
+		if (player) {
+			player.picked = true;
+			this.setState({ players });
+		}
 	}
 
 	onGetWhiteCards(cards) {
@@ -127,7 +142,8 @@ export default class Room extends Component {
 		} else {
 			this.setState({ chosen: [...this.state.chosen, card] }, () => {
 				if (this.state.chosen.length >= this.state.blanks) {
-					this.setState({ whiteCards: this.state.whiteCards.filter(c => !this.state.chosen.includes(c)) })
+					whevent.call('LOADING', '发送中...');
+					// this.setState({ whiteCards: this.state.whiteCards.filter(c => !this.state.chosen.includes(c)) })
 					server.send('$PICK', this.state.chosen.map(c => ({ _id: c._id })));
 				}
 			});
@@ -163,7 +179,7 @@ export default class Room extends Component {
 	}
 
 	render() {
-		const { id, name, password, blackDecks, whiteDecks, players, spectators, started, blackCard, whiteCards, chosen, peek } = this.state;
+		const { id, name, password, blackDecks, whiteDecks, players, spectators, started, blackCard, whiteCards, chosen, peek, completedPick } = this.state;
 		return (
 			<section className="Room">
 				<div className="Room-LeftPanel">
@@ -194,9 +210,10 @@ export default class Room extends Component {
 				<div className="Room-MiddleRightPanel">
 					<div className={`Room-HandArea${this.isMeCzar() ? ' Room-HandArea_Disabled' : ''}`} data-title="手牌">{whiteCards.map(card =>
 						<WhiteCard
-							onMouseEnter={() => this.setState({ peek: card })}
+							chosen={!!chosen.find(c => c._id === card._id)}
+							onMouseEnter={() => !completedPick && this.setState({ peek: card })}
 							onMouseLeave={() => this.setState({ peek: null })}
-							onClick={() => this.onChooseCard(card)}
+							onClick={() => !completedPick && this.onChooseCard(card)}
 							key={`whitecard_${card._id}`}
 						>
 							{card.text}

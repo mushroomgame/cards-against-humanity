@@ -10,12 +10,18 @@
 	align-items: center;
 	text-align: center;
 	cursor: pointer;
-	transition: background-color .2s, color .2s;
+	transition: all .2s;
 	&:hover {
 		background-color: #89a;
 		color: #fff;
 	}
 	&:not(:first-of-type){
 		margin-top: 1rem;
+	}
+
+	&_Chosen {
+		background-color: #7bf !important;
+		color: #fff !important;
+		border: solid 2px #59d;
 	}
 }

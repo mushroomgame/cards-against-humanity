@@ -1,12 +1,13 @@
 .BlackCard {
 	height: 30vh;
-	max-height: 20rem;
+	// max-height: 20rem;
 
 	background-color: #333;
 	color: #eee;
 	padding: 1rem;
 	font-size: 2rem;
 	border-radius: 0.5rem;
+	overflow-y: auto;
 
 	&-Text {
 
