@@ -19,10 +19,19 @@ class MessageHandler {
 		whevent.bind('$REQUEST_ENTER_ROOM', this.onRequestEnterRoom, this);
 		whevent.bind('$SPECTATE', this.onRequestSpectate, this);
 		whevent.bind('$JOIN', this.onRequestJoin, this);
+		whevent.bind('$START', this.onRequestStart, this);
+	}
+
+	onRequestStart(player) {
+		if (player.channel && player.channel instanceof Room) {
+			player.channel.start(player);
+		} else {
+			player.send('$ALERT', '未知错误');
+		}
 	}
 
 	onRequestJoin(player) {
-		if (player.channel && player.channel.joinGamers) {
+		if (player.channel && player.channel instanceof Room) {
 			player.channel.joinGamers(player);
 		} else {
 			player.send('$ALERT', '未知错误');
@@ -54,7 +63,7 @@ class MessageHandler {
 	onLogin(player, { nickname }) {
 		let p = Player.getPlayerByNickname(nickname);
 		if (p) {
-			player.send('$ERROR', { message: '已经有同名玩家在线了' });
+			player.send('$ALERT', { message: '已经有同名玩家在线了' });
 		} else {
 			player.nickname = nickname;
 			player.send('$LOGGED_IN', { nickname, uuid: player.uuid });
@@ -62,8 +71,7 @@ class MessageHandler {
 	}
 
 	onCreateRoom(player, { roomName, password, whiteDecks, blackDecks }) {
-		const defaultNames = ['小帅哥快来玩呀', '快来干我', 'Do you like Van♂游戏？', '来一起玩'];
-		const room = new Room(Lobby.$, roomName || defaultNames[Math.floor(defaultNames.length * Math.random())], password, blackDecks, whiteDecks);
+		const room = new Room(Lobby.$, roomName, password, blackDecks, whiteDecks);
 		room.enter(player);
 		Lobby.$.broadcast('$ROOM_CREATED', room.getRoomShortInfo());
 	}

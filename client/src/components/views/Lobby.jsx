@@ -90,9 +90,9 @@ class Lobby extends Component {
 							<PlayerList players={this.state.players} />
 						</div>
 						<div className="Lobby-Settings">
-							<Button className="Button_Wide" event="CREATE_ROOM_CLICKED"><i className="icon-plus"></i>创建房间</Button>
-							<Button className="Button_Wide" event="CREATE_CARD_CLICKED"><i className="icon-upload2"></i>制作卡牌</Button>
-							<Button className="Button_Wide" event="GAME_SETTINGS_CLICKED"><i className="icon-cog"></i>游戏设置</Button>
+							<Button className="Button_Wide" event="CREATE_ROOM_CLICKED" color="#999"><i className="icon-plus"></i>创建房间</Button>
+							<Button className="Button_Wide" event="CREATE_CARD_CLICKED" color="#999"><i className="icon-upload2"></i>制作卡牌</Button>
+							<Button className="Button_Wide" event="GAME_SETTINGS_CLICKED" color="#999"><i className="icon-cog"></i>游戏设置</Button>
 						</div>
 					</div>
 				</section>

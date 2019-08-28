@@ -187,9 +187,9 @@ export default class Chat extends Component {
 					</dl>
 				)}</div>
 				<div className="Chat-InputArea">
-					<Button onClick={this.onClickMute}><i className={this.state.mute ? "icon-volume-mute2" : "icon-volume-medium"}></i></Button>
+					<Button onClick={this.onClickMute} color="#999"><i className={this.state.mute ? "icon-volume-mute2" : "icon-volume-medium"}></i></Button>
 					<Input onKeyDown={this.onKeyPress} onChange={this.onMessageChange} value={this.state.message} />
-					<Button onClick={this.onClickSend}>发送</Button>
+					<Button onClick={this.onClickSend} color="#999">发送</Button>
 				</div>
 			</div>
 		);

@@ -1,6 +1,7 @@
 const Channel = require('./channel');
+const Game = require('./game');
 const config = require('config');
-const { getDecksFromCache } = require('../services/cardService');
+const cardService = require('../services/cardService');
 
 const roomMap = new Map();
 
@@ -24,58 +25,19 @@ class Room extends Channel {
 		}
 	}
 
-	static getRoomList() {
-		return [...roomMap.values()].map(v => v.getRoomShortInfo());
-	}
-
-	static getRoomById(id) {
-		return roomMap.get(id);
-	}
-
-	getRoomShortInfo() {
-		const decks = getDecksFromCache();
-		return {
-			id: this.id,
-			name: this.name,
-			password: !!this.password,
-			blackDecks: this.blackDecks.map(b => decks.find(d => d.id === b).name),
-			whiteDecks: this.whiteDecks.map(w => decks.find(d => d.id === w).name),
-			players: this.gamePlayers.length,
-			spectators: this.spectators.length,
-		}
-	}
-
-	getRoomInfo() {
-		const decks = getDecksFromCache();
-		return {
-			id: this.id,
-			name: this.name,
-			password: !!this.password,
-			blackDecks: this.blackDecks.map(b => decks.find(d => d.id === b).name),
-			whiteDecks: this.whiteDecks.map(w => decks.find(d => d.id === w).name),
-			players: this.gamePlayers.map(p => ({ uuid: p.uuid, nickname: p.nickname, host: this.host === p })),
-			spectators: this.spectators.map(p => ({ uuid: p.uuid, nickname: p.nickname })),
-		}
-	}
-
-	isGamePlayersFull() {
-		return this.gamePlayers.length >= (config.get('maxPlayers') || 8);
-	}
-
-	isSpectatorsFull() {
-		return config.get('maxSpectators') >= 0 && this.spectators.length >= config.get('maxSpectators');
-	}
-
-	checkHost() {
-		if(!this.gamePlayers.includes(this.host)){
-			this.host = null;
-		}
-
-		if (this.gamePlayers.length > 0) {
-			if (!this.host) {
-				this.host = this.gamePlayers[0];
-				this.broadcast('$HOST', { uuid: this.host.uuid, nickname: this.host.nickname });
-			}
+	// 开始游戏
+	async start(player) {
+		if (player !== this.host) {
+			player.send('$ALERT', '您不是房主，无权限进行此操作');
+		} else if (this.gamePlayers.length < 2) {
+			player.send('$ALERT', '玩家过少，无法开始');
+		} else {
+			// this.game = new Game(this.blackDecks, this.whiteDecks);
+			this.broadcast('$START');
+			this.game = new Game(await cardService.getBlackCards(), await cardService.getWhiteCards());
+			let blackCard = this.game.getBlackCard();
+			this.broadcast('$BLACK', blackCard);
+			this.game.dealWhiteCards(...this.gamePlayers);
 		}
 	}
 
@@ -163,6 +125,61 @@ class Room extends Channel {
 				p.send(signal, data);
 			}
 		})
+	}
+
+	static getRoomList() {
+		return [...roomMap.values()].map(v => v.getRoomShortInfo());
+	}
+
+	static getRoomById(id) {
+		return roomMap.get(id);
+	}
+
+	getRoomShortInfo() {
+		const decks = cardService.getDecksFromCache();
+		return {
+			id: this.id,
+			name: this.name,
+			password: !!this.password,
+			blackDecks: this.blackDecks.map(b => decks.find(d => d.id === b).name),
+			whiteDecks: this.whiteDecks.map(w => decks.find(d => d.id === w).name),
+			players: this.gamePlayers.length,
+			spectators: this.spectators.length,
+		}
+	}
+
+	getRoomInfo() {
+		const decks = cardService.getDecksFromCache();
+		return {
+			id: this.id,
+			name: this.name,
+			password: !!this.password,
+			blackDecks: this.blackDecks.map(b => decks.find(d => d.id === b).name),
+			whiteDecks: this.whiteDecks.map(w => decks.find(d => d.id === w).name),
+			players: this.gamePlayers.map(p => ({ uuid: p.uuid, nickname: p.nickname, host: this.host === p })),
+			spectators: this.spectators.map(p => ({ uuid: p.uuid, nickname: p.nickname })),
+		}
+	}
+
+	isGamePlayersFull() {
+		return this.gamePlayers.length >= (config.get('maxPlayers') || 8);
+	}
+
+	isSpectatorsFull() {
+		return config.get('maxSpectators') >= 0 && this.spectators.length >= config.get('maxSpectators');
+	}
+
+	checkHost() {
+		if (!this.gamePlayers.includes(this.host)) {
+			this.host = null;
+		}
+
+		if (this.gamePlayers.length > 0) {
+			if (!this.host) {
+				this.host = this.gamePlayers[0];
+				this.broadcast('$HOST', { uuid: this.host.uuid, nickname: this.host.nickname });
+			}
+		}
 	}
 }
 

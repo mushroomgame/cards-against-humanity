@@ -18,6 +18,8 @@ class RoomCreation extends Component {
 	}
 
 	componentDidMount() {
+		const defaultNames = ['小帅哥快来玩呀', '快来干我', 'Do you like Van♂游戏？', '来一起玩'];
+		data.find(d => d.name === 'roomName').placeholder = defaultNames[Math.floor(defaultNames.length * Math.random())];
 		whevent.bind('$DECKS', this.onGetDecks, this);
 		if (!global.decks) {
 			whevent.call('LOADING', '获取服务器信息...');
@@ -76,7 +78,7 @@ class RoomCreation extends Component {
 					v.checked && finalData[d.name].push(v.id);
 				});
 			} else {
-				finalData[d.name] = d.value;
+				finalData[d.name] = d.value || d.placeholder;
 			}
 			return finalData;
 		});
@@ -96,7 +98,7 @@ class RoomCreation extends Component {
 	render() {
 		return (
 			this.state.loaded && <section className="RoomCreation">
-				<Form onChange={this.onChange} buttons={[{ label: '创建房间', onClick: this.onCreate }]} data={data} />
+				<Form onChange={this.onChange} buttons={[{ label: '创建房间', onClick: this.onCreate, color: '#999' }]} data={data} />
 			</section>
 		);
 	}

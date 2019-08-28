@@ -31,18 +31,23 @@ input[type='password'] {
 
 [data-title] {
 	position: relative;
+	&> *:first-child{
+		margin-top: 3.5rem;
+	}
 	&::before {
 		content: attr(data-title);
+		position: absolute;
 		display: block;
 		top: 0;
 		left: 0;
 		right: 0;
 		padding: 0.5rem;
-		margin: -1rem -1rem 1rem -1rem;
+		margin: 0rem -1rem 1rem -1rem;
 		background-color: #ccc;
 		text-align: center;
 		font-weight: bold;
 		color: #666;
+		height: 2.5rem;
 	}
 }
 

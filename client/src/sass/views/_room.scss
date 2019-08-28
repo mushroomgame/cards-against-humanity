@@ -29,9 +29,33 @@
 		flex-direction: column;
 	}
 
+	&-HandArea {
+		display: grid;
+		grid-template-rows: repeat(1fr, 10);
+		overflow-y: auto;
+	}
+
+	&-PlayArea {
+		display: grid;
+		grid-template-rows: repeat(1fr, 8);
+		overflow-y: auto;
+	}
+
+	&-BlackCardArea {
+		position: relative;
+	}
+
 	&-Chat {
 		flex: 1;
 		margin-top: 1rem;
+	}
+
+	&-StartButton {
+		--transX: -50%;
+		--transY: -50%;
+		position: absolute;
+		top: 50%;
+		left: 50%;
 	}
 
 	&-PlayArea,
@@ -42,12 +66,12 @@
 	&-Players {
 		flex: 2;
 		margin-bottom: 1rem;
-		overflow: auto;
+		overflow-y: auto;
 	}
 
 	&-Spectators {
 		flex: 1;
-		overflow: auto;
+		overflow-y: auto;
 	}
 
 	&-Info {

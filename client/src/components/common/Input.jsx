@@ -15,7 +15,7 @@ export default class Input extends Component {
 		return (
 			<input
 				className={`Input ${className}`}
-				type="text" placeholder={placeholder}
+				type="text" placeholder={placeholder || ''}
 				onChange={this.onChange}
 				onKeyPress={e => onKeyPress && onKeyPress(e)}
 				value={this.props.value || this.state.content} {...rest}

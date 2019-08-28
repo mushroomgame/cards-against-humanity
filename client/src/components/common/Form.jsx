@@ -20,7 +20,7 @@ export default class Form extends Component {
 		this.setState({ data });
 	}
 
-	drawItem({ type, name, value, boxes }) {
+	drawItem({ type, name, value, boxes, placeholder }) {
 		switch (type) {
 			case 'password':
 				return <input className="Input Form-Item-Input Form-Item-Input_Password" type="password" id={name} name={name} value={value} onChange={e => this.onChange(name, e.target.value)} />;
@@ -39,7 +39,7 @@ export default class Form extends Component {
 
 			case 'text':
 			default:
-				return <input className="Input Form-Item-Input Form-Item-Input_Text" type="text" id={name} name={name} value={value} onChange={e => this.onChange(name, e.target.value)} />;
+				return <input className="Input Form-Item-Input Form-Item-Input_Text" placeholder={placeholder} type="text" id={name} name={name} value={value} onChange={e => this.onChange(name, e.target.value)} />;
 		}
 	}
 
@@ -53,7 +53,7 @@ export default class Form extends Component {
 					</div>
 				)}</div>
 				<div className="Form-Buttons">{this.state.buttons.map((b, index) =>
-					<Button className="Button_Wide" onClick={b.onClick} key={`form_button_${index}`}>{b.label}</Button>
+					<Button className="Button_Wide" onClick={b.onClick} key={`form_button_${index}`} color={b.color}>{b.label}</Button>
 				)}</div>
 			</form>
 		);

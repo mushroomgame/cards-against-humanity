@@ -10,7 +10,7 @@ function connect() {
 	});
 
 	ws.onMessage(event => {
-		const pack = JSON.parse(Base64.decode(event.data));
+		const pack = JSON.parse(decodeURIComponent(escape(Base64.decode(event.data))));
 		whevent.emit('$$MESSAGE', pack);
 		console.log('%cRECEIVE', 'color: orange;', pack.signal, pack.data);
 		whevent.emit(pack.signal, pack.data);
@@ -29,7 +29,7 @@ function connect() {
 
 function send(signal, data) {
 	console.log('%cSEND', 'color: green;', signal, data);
-	const msg = Base64.encode(JSON.stringify({ signal, data }));
+	const msg = Base64.encode(unescape(encodeURIComponent(JSON.stringify({ signal, data }))));
 	ws.send(msg);
 }
 
