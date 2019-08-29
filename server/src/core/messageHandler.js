@@ -2,6 +2,7 @@ const whevent = require('whevent');
 const Player = require('../entity/player');
 const Lobby = require('../entity/lobby');
 const Room = require('../entity/room');
+const config = require('config');
 
 const { getDecksFromCache } = require('../services/cardService');
 
@@ -80,7 +81,13 @@ class MessageHandler {
 		player.send('$DECKS', getDecksFromCache());
 	}
 
-	onLogin(player, { nickname }) {
+	onLogin(player, { nickname, version }) {
+		let serverVersion = config.get('version');
+		if (version !== serverVersion) {
+			player.send('$ALERT', { message: '客户端版本过低，请尝试强制刷新(SHIFT+F5)或清除浏览器缓存后再试！' });
+			return;
+		}
+
 		let p = Player.getPlayerByNickname(nickname);
 		if (p) {
 			player.send('$ALERT', { message: '已经有同名玩家在线了' });
