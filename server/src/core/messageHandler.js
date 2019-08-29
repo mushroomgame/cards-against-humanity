@@ -21,13 +21,22 @@ class MessageHandler {
 		whevent.bind('$JOIN', this.onRequestJoin, this);
 		whevent.bind('$START', this.onRequestStart, this);
 		whevent.bind('$PICK', this.onPickCard, this);
+		whevent.bind('$WINNER', this.onPickWinner, this);
+	}
+
+	onPickWinner(player, { uuid }) {
+		if (player.channel && player.channel instanceof Room) {
+			player.channel.setWinner(player, uuid);
+		} else {
+			player.send('$ALERT', { message: '未知错误' });
+		}
 	}
 
 	onPickCard(player, cards) {
 		if (player.channel && player.channel instanceof Room) {
 			player.channel.pickCards(player, cards);
 		} else {
-			player.send('$ALERT', '未知错误');
+			player.send('$ALERT', { message: '未知错误' });
 		}
 	}
 
@@ -35,7 +44,7 @@ class MessageHandler {
 		if (player.channel && player.channel instanceof Room) {
 			player.channel.start(player);
 		} else {
-			player.send('$ALERT', '未知错误');
+			player.send('$ALERT', { message: '未知错误' });
 		}
 	}
 
@@ -43,7 +52,7 @@ class MessageHandler {
 		if (player.channel && player.channel instanceof Room) {
 			player.channel.joinGamers(player);
 		} else {
-			player.send('$ALERT', '未知错误');
+			player.send('$ALERT', { message: '未知错误' });
 		}
 	}
 
@@ -51,7 +60,7 @@ class MessageHandler {
 		if (player.channel && player.channel.spectate) {
 			player.channel.spectate(player);
 		} else {
-			player.send('$ALERT', '未知错误');
+			player.send('$ALERT', { message: '未知错误' });
 		}
 	}
 

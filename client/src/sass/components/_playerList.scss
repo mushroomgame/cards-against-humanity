@@ -30,15 +30,27 @@
 		}
 	}
 
+	&_Me {
+		font-weight: bold;
+		color: #555;
+	}
+
 	&_Czar {
 		color: white;
 		border: solid 2px #59d;
 		background-color: #7bf;
 	}
 
-	&_Me {
-		font-weight: bold;
-		color: #555;
+	&_Picked {
+		color: #263;
+		border: solid 2px #5d9;
+		background-color: #7ea;
+	}
+
+	&_Won {
+		color: #542;
+		border: solid 2px #a82;
+		background-color: #fce730;
 	}
 
 	&:hover {

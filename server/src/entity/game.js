@@ -43,12 +43,21 @@ class Game {
 		// }, 5000);
 	}
 
+	setWinner(uuid) {
+		const cards = this.pickedCards.get(uuid);
+		const player = this.currentRoundPlayers.find(p => p.uuid === uuid);
+		const nickname = (player && player.nickname) || '';
+		this.phase = 'WAITING';
+		this.room.broadcast('$WINNER', { uuid, nickname, cards });
+	}
+
 	judging() {
 		let data = [];
 		[...this.pickedCards.keys()].forEach(key => {
 			let cards = this.pickedCards.get(key);
 			data.push({ uuid: key, cards });
 		})
+		this.phase = 'JUDGING';
 		this.room.broadcast('$JUDGING', data);
 	}
 

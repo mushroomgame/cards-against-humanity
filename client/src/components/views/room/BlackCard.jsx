@@ -1,21 +1,15 @@
 import React, { Component } from 'react';
 
-const BlackCard = ({ text, replacements, peek, preview }) => {
+const BlackCard = ({ text, replacements }) => {
 	text = text || '';
 	let arr = text.split('_');
-	let rep = [];
-	if (replacements) {
-		rep = [...replacements];
-	}
+	let rep = (replacements && replacements.map(r => r.text)) || [];
 
-	if (peek) {
-		rep.push(peek);
-	}
 	let t = arr.map((s, index) =>
 		<React.Fragment key={`text_${index}`}>
 			{s && <span className="BlackCard-Text">{s}</span>}
 			{(index < arr.length - 1) &&
-				<span className={rep && rep[index] ? (preview ? 'BlackCard-Replacement BlackCard-Replacement_Preview' : 'BlackCard-Replacement') : 'BlackCard-Blank'}>{rep && rep[index] || '____'}</span>}
+				<span className={rep && rep[index] ? 'BlackCard-Replacement' : 'BlackCard-Blank'}>{rep && rep[index] || '____'}</span>}
 		</React.Fragment>);
 	return (
 		<div className="BlackCard">{t}</div>

@@ -28,9 +28,9 @@ class Room extends Channel {
 	// 开始游戏
 	async start(player) {
 		if (player !== this.host) {
-			player.send('$ALERT', '您不是房主，无权限进行此操作');
+			player.send('$ALERT', { message: '您不是房主，无权限进行此操作' });
 		} else if (this.gamePlayers.length < 2) {
-			player.send('$ALERT', '玩家过少，无法开始');
+			player.send('$ALERT', { message: '玩家过少，无法开始' });
 		} else {
 			// this.game = new Game(this.blackDecks, this.whiteDecks);
 			this.broadcast('$START');
@@ -39,15 +39,24 @@ class Room extends Channel {
 		}
 	}
 
+	setWinner(player, uuid) {
+		console.log(this.game.phase, this.game.czar, player);
+		if (!this.game || this.game.phase !== 'JUDGING' || this.game.czar !== player) {
+			player.send('$ALERT', { message: '无法进行该操作' });
+		} else {
+			this.game.setWinner(uuid);
+		}
+	}
+
 	pickCards(player, cards) {
 		if (this.game && this.game.phase === 'PICKING') {
 			if (this.game.czar !== player) {
 				this.game.pickWhiteCards(player, cards);
 			} else {
-				player.send('$ALERT', '裁判无法出卡');
+				player.send('$ALERT', { message: '裁判无法出卡' });
 			}
 		} else {
-			player.send('$ALERT', '本局已经结束了');
+			player.send('$ALERT', { message: '本局已经结束了' });
 		}
 	}
 
@@ -92,7 +101,7 @@ class Room extends Channel {
 			this.checkHost();
 			this.roomChange(true);
 		} else {
-			player.send('$ALERT', '玩家已满，无法加入！');
+			player.send('$ALERT', { message: '玩家已满，无法加入！' });
 		}
 	}
 
@@ -104,7 +113,7 @@ class Room extends Channel {
 			this.checkHost();
 			this.roomChange(true);
 		} else {
-			player.send('$ALERT', '观众已满，无法加入！');
+			player.send('$ALERT', { message: '观众已满，无法加入！' });
 		}
 	}
 
