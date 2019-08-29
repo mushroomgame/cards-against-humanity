@@ -38,7 +38,7 @@ class Game {
 		afkPlayers.forEach(p => {
 			this.room.lobby.enter(p);
 			p.afk = 0;
-			p.send('$ALERT', '您由于太久没有操作，被自动请出了对局');
+			p.send('$ALERT', { message: '您由于太久没有操作，被自动请出了对局' });
 		});
 	}
 
