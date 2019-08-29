@@ -67,6 +67,8 @@ class Game {
 		this.czarIndex--;
 		if (this.czarIndex < 0) {
 			this.czarIndex = this.room.gamePlayers.length - 1;
+		} else if (this.czarIndex >= this.room.gamePlayers.length) {
+			this.czarIndex = this.room.gamePlayers.length - 1;
 		}
 		this.czar = this.room.gamePlayers[this.czarIndex];
 
@@ -166,7 +168,7 @@ class Game {
 
 		if (player) {
 			streak = player.streak;
-			score = (this.currentRoundPlayers.length - 1) + (streak - 1);
+			score = Math.max(Math.floor(this.currentRoundPlayers.length * 0.5) + (streak - 1), 1);
 			player.score = (player.score || 0) + score;
 		}
 

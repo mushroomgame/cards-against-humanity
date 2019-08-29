@@ -3,5 +3,5 @@
 	"maxPlayers": 8,
 	"maxSpectators": -1,
 	"apiBase": "https://cah.nut.moe",
-	"version": "alpha 1.0.0"
+	"version": "alpha 1.0.1"
 }

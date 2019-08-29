@@ -161,8 +161,13 @@ export default class Room extends Component {
 		})
 	}
 
-	onSomeoneEnter(player) {
-		this.setState({ players: [...this.state.players, player] });
+	onSomeoneEnter({ uuid, nickname, spectate, host }) {
+		if (spectate) {
+			this.setState({ spectators: [...this.state.spectators, { uuid, nickname }] });
+		} else {
+			this.setState({ players: [...this.state.players, { uuid, nickname, host, score: 0 }] });
+		}
+
 	}
 
 	onSomeoneLeave(player) {
