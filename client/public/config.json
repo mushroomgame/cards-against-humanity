@@ -1,10 +1,5 @@
 {
-	"default": {
-		"wsserver": "ws://localhost:2333",
-		"allowSendImage": true,
-		"version": "alpha 1.0.1"
-	},
-	"cah.moe": {
-		"wsserver": "ws://cah.moe:2333"
-	}
+	"wsserver": "ws://localhost:2333",
+	"allowSendImage": true,
+	"version": "alpha 1.0.1"
 }

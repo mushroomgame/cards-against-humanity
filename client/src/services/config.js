@@ -3,34 +3,15 @@ import http from './core/http';
 let config = {};
 
 async function init() {
-	let result
+	let data = (await http.get('./config.json')).data;
+
 	try {
-		console.log('读取config_override.json成功')
-		result = await http.get('./config_override.json');
-	} catch {
-
-	}
-
-	if (!result) {
-		console.log('无法找到 config_override.json，读取config.json')
-		try {
-			result = await http.get('./config.json');
-		} catch {
-
+		let override = await http.get('./config_override.json');
+		if (override && override.data) {
+			data = { ...data, ...override.data };
 		}
-	}
-
-	if (!result) {
-		console.error('无法读取config.json！')
-		return;
-	}
-
-	result = result.data;
-
-	let data = result['default'];
-
-	if (data[window.location.hostname]) {
-		data = { ...data, ...data[window.location.hostname] };
+	} catch {
+		console.log('未找到覆盖规则文件(config_override.json)，忽略');
 	}
 
 	config = data;
