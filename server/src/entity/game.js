@@ -91,7 +91,7 @@ class Game {
 
 	setupPickingTimer() {
 		let round = this.round;
-		let time = 5000 + (this.blanks * 5000);
+		let time = 15000 + (this.blanks * 5000);
 		this.pickingTimer = setTimeout(() => {
 			if (this.round === round && this.phase === 'PICKING') {
 				let unpickedPlayers = this.currentRoundPlayers.filter(p => ![...this.pickedCards.keys()].find(k => k === p.uuid) && this.czar !== p);
@@ -112,7 +112,7 @@ class Game {
 
 	setupJudgingTimer() {
 		let round = this.round;
-		let time = 5000 + (this.blanks * 5000);
+		let time = 15000 + (this.blanks * 5000);
 		this.pickingTimer = setTimeout(() => {
 			if (this.czar) {
 				if (this.round === round && this.phase === 'JUDGING') {
@@ -175,7 +175,7 @@ class Game {
 		this.phase = 'WAITING';
 		this.room.broadcast('$WINNER', { uuid, nickname, cards, score, streak });
 
-		let time = 5000;
+		let time = 10000;
 		this.room.broadcast('$TIMER', { time });
 		setTimeout(() => {
 			this.nextRound();
