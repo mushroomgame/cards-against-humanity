@@ -1,3 +1,4 @@
 node_modules/
 build/
 config_override.json
+production.json
