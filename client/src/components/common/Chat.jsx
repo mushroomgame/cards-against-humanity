@@ -29,6 +29,7 @@ export default class Chat extends Component {
 		whevent.bind('$SPECTATE', this.onSpectate, this);
 		whevent.bind('$JOIN', this.onJoin, this);
 		whevent.bind('$STOP', this.onStop, this);
+		whevent.bind('$NEW_ROUND', this.onNewRound, this);
 
 		whevent.bind('LOG', this.onLog, this);
 	}
@@ -39,8 +40,19 @@ export default class Chat extends Component {
 		whevent.unbind('$LEAVE', this.onPlayerLeave, this);
 		whevent.unbind('$HOST', this.onHostChange, this);
 		whevent.unbind('$SPECTATE', this.onSpectate, this);
+		whevent.unbind('$JOIN', this.onJoin, this);
 		whevent.unbind('$STOP', this.onStop, this);
+		whevent.unbind('$NEW_ROUND', this.onNewRound, this);
+
 		whevent.unbind('LOG', this.onLog, this);
+	}
+
+	onNewRound({ czar }) {
+		this.addLog({
+			speaker: '系统',
+			message: czar.uuid === global.uuid ? `新一轮游戏已开始，您是裁判` : `新一轮游戏已开始，裁判是 ${czar.nickname}`,
+			from: 'System'
+		});
 	}
 
 	onLog(message) {
@@ -51,7 +63,7 @@ export default class Chat extends Component {
 		});
 	}
 
-	onStop(){
+	onStop() {
 		this.addLog({
 			speaker: '系统',
 			message: '游戏已停止',

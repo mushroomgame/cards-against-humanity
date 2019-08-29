@@ -11,6 +11,7 @@
 	text-align: center;
 	cursor: pointer;
 	transition: all .2s;
+	border: solid 2px transparent;
 	&:hover {
 		background-color: #89a;
 		color: #fff;

@@ -55,7 +55,6 @@ class Lobby extends Component {
 		let r = rooms.find(r => r.id === room.id);
 		if (r) {
 			Object.assign(r, room);
-			console.log(rooms);
 			this.setState({ rooms })
 		}
 	}

@@ -26,6 +26,7 @@ class MessageHandler {
 
 	onPickWinner(player, { uuid }) {
 		if (player.channel && player.channel instanceof Room) {
+			player.afk = 0;
 			player.channel.setWinner(player, uuid);
 		} else {
 			player.send('$ALERT', { message: '未知错误' });
@@ -34,6 +35,7 @@ class MessageHandler {
 
 	onPickCard(player, cards) {
 		if (player.channel && player.channel instanceof Room) {
+			player.afk = 0;
 			player.channel.pickCards(player, cards);
 		} else {
 			player.send('$ALERT', { message: '未知错误' });

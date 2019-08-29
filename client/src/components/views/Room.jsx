@@ -25,9 +25,9 @@ export default class Room extends Component {
 		phase: 'STOPPED'
 	}
 
-	componentDidUpdate() {
-		console.log('%c' + this.state.phase, 'color: #a63;');
-	}
+	// componentDidUpdate() {
+	// 	console.log('%c' + this.state.phase, 'color: #a63;');
+	// }
 
 	componentWillMount() {
 		whevent.bind('$ENTER', this.onSomeoneEnter, this);
@@ -42,9 +42,21 @@ export default class Room extends Component {
 		whevent.bind('$PICKED', this.onPlayerPicked, this);
 		whevent.bind('$JUDGING', this.onJudging, this);
 		whevent.bind('$WINNER', this.onWinnerDetermined, this);
+		whevent.bind('$REMOVE_CARDS', this.onRemoveCards, this);
 
-		const { id, name, password, blackDecks, whiteDecks, players, spectators } = global.room;
-		this.setState({ id, name, password, blackDecks, whiteDecks, players, spectators });
+		const { id, name, password, blackDecks, whiteDecks, players, spectators, game } = global.room;
+		this.setState({ id, name, password, blackDecks, whiteDecks, players, spectators, phase: 'STOPPED' }, () => {
+			if (game) {
+				let players = [...this.state.players];
+				players.forEach(p => {
+					if (p.uuid === game.czar) {
+						p.czar = true;
+					}
+				});
+				this.setState({ blackCard: game.blackCard, players })
+			}
+		});
+
 	}
 
 	componentWillUnmount() {
@@ -60,16 +72,23 @@ export default class Room extends Component {
 		whevent.unbind('$PICKED', this.onPlayerPicked, this);
 		whevent.unbind('$JUDGING', this.onJudging, this);
 		whevent.unbind('$WINNER', this.onWinnerDetermined, this);
+		whevent.unbind('$REMOVE_CARDS', this.onRemoveCards, this);
+
 	}
 
-	onWinnerDetermined({ uuid, nickname, cards }) {
+	onWinnerDetermined({ uuid, nickname, cards, score, streak }) {
 		whevent.call('LOADING');
 		let text = this.state.blackCard.text.split('_').map((t, index) => t + (cards[index] ? cards[index].text : '')).join('');
-		whevent.call('LOG', text);
+		let textForDisplay = this.state.blackCard.text.split('_').map((t, index) => t + (cards[index] ? ('[' + cards[index].text + ']') : '')).join('');
+		whevent.call('READ', text, 'system');
+		whevent.call('LOG', uuid < 0 ? '本局结束，平局。' : (streak >= 2 ? `${nickname} ${streak}连胜，得分+${score}` : `${nickname} 获胜，得分+${score}`));
 		const players = [...this.state.players];
 		let player = players.find(p => p.uuid === uuid);
-		player && (player.won = true);
-		this.setState({ phase: 'WAITING', winnerGroup: cards, players, winner: players.find(p => p.uuid === uuid) });
+		if (player) {
+			player.won = true;
+			player.score = (player.score || 0) + score;
+		}
+		this.setState({ phase: 'SHOWING', winnerGroup: cards, players, winner: players.find(p => p.uuid === uuid) });
 	}
 
 	onJudging(groups) {
@@ -89,29 +108,30 @@ export default class Room extends Component {
 			player.czar = true;
 		}
 
-		this.setState({ 
+		this.setState({
 			phase: global.uuid === czar.uuid ? 'WAITING' : 'PICKING',
-			blackCard, 
-			blanks: blackCard.text.split('_').length - 1, 
-			players, 
-			chosen: [], 
-			judgingGroups: [], 
-			peek: null, 
-			winnerGroup: null 
+			blackCard,
+			blanks: blackCard.text.split('_').length - 1,
+			players,
+			chosen: [],
+			judgingGroups: [],
+			peek: null,
+			winnerGroup: null
 		});
 	}
 
 	onPlayerPicked({ uuid, nickname }) {
-		if (uuid === global.uuid) {
-			whevent.call('LOADING');
-			this.setState({ whiteCards: this.state.whiteCards.filter(w => !this.state.chosen.find(c => c._id === w._id)), chosen: [], phase: 'WAITING' });
-		}
 		const players = [...this.state.players];
 		const player = players.find(p => p.uuid === uuid);
 		if (player) {
 			player.picked = true;
 			this.setState({ players });
 		}
+	}
+
+	onRemoveCards(cards) {
+		whevent.call('LOADING');
+		this.setState({ whiteCards: this.state.whiteCards.filter(w => !cards.includes(w._id)), chosen: [], phase: 'WAITING' });
 	}
 
 	onGetWhiteCards(cards) {
@@ -128,15 +148,16 @@ export default class Room extends Component {
 			p.czar = false;
 			p.won = false;
 			p.picked = false;
+			p.score = 0;
 		});
-		this.setState({ 
-			phase: 'STOPPED', 
-			whiteCards: [], 
-			blackCard: null, 
-			chosen: [], 
-			judgingGroups: [], 
-			peek: null, 
-			winnerGroup: null 
+		this.setState({
+			phase: 'STOPPED',
+			whiteCards: [],
+			blackCard: null,
+			chosen: [],
+			judgingGroups: [],
+			peek: null,
+			winnerGroup: null
 		})
 	}
 
@@ -167,10 +188,17 @@ export default class Room extends Component {
 
 	onSpectate(player) {
 		player.spectate = true;
+		player.czar = false;
+		player.picked = false;
+		player.won = false;
 		const players = [...this.state.players].filter(p => p.uuid !== player.uuid);
 		const spectators = [...this.state.spectators];
 		spectators.push(player);
-		this.setState({ players, spectators });
+		if (player.uuid === global.uuid) {
+			this.setState({ players, spectators, whiteCards: [] });
+		} else {
+			this.setState({ players, spectators });
+		}
 	}
 
 	isMeSpectating() {
@@ -271,6 +299,7 @@ export default class Room extends Component {
 											break;
 										case 'JUDGING':
 										case 'WAITING':
+										case 'SHOWING':
 											replacements = (winnerGroup && [...winnerGroup]) || [];
 											break;
 									}
@@ -287,18 +316,14 @@ export default class Room extends Component {
 				<div className="Room-MiddleLeftPanel">
 					<div className="Room-PlayArea" data-title="出牌区域">{judgingGroups.map(({ uuid, cards }) =>
 						<div
-							className={`Room-PlayArea-Group${(winner && winner.uuid === uuid) ? ' Room-PlayArea-Group_Won' : ''}`}
+							className={`Room-PlayArea-Group${(winner && winner.uuid === uuid) || (!winner && uuid < 0 && phase === 'SHOWING') ? ' Room-PlayArea-Group_Won' : ''}`}
 							data-uuid={uuid}
 							key={`group_${uuid}`}
 							onMouseEnter={() => phase === 'JUDGING' && this.setState({ winnerGroup: cards })}
 							onMouseLeave={() => phase === 'JUDGING' && this.setState({ winnerGroup: null })}
 							onClick={() => phase === 'JUDGING' && this.setWinner(uuid)}
 						>{cards.map(card =>
-							<WhiteCard
-								key={`whitecard_${card._id}`}
-							>
-								{card.text}
-							</WhiteCard>
+							<WhiteCard key={`whitecard_${card._id}`}>{card.text}</WhiteCard>
 						)}</div>
 					)}</div>
 				</div>
@@ -317,7 +342,7 @@ export default class Room extends Component {
 				</div>
 				<div className="Room-RightPanel">
 					<div className="Room-Players" data-title="玩家列表">
-						<PlayerList players={players} />
+						<PlayerList players={players} showScore={true} />
 					</div>
 					<div className="Room-Spectators" data-title="观众">
 						<PlayerList players={spectators} />

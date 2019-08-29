@@ -40,7 +40,6 @@ class Room extends Channel {
 	}
 
 	setWinner(player, uuid) {
-		console.log(this.game.phase, this.game.czar, player);
 		if (!this.game || this.game.phase !== 'JUDGING' || this.game.czar !== player) {
 			player.send('$ALERT', { message: '无法进行该操作' });
 		} else {
@@ -52,6 +51,7 @@ class Room extends Channel {
 		if (this.game && this.game.phase === 'PICKING') {
 			if (this.game.czar !== player) {
 				this.game.pickWhiteCards(player, cards);
+				player.send('$REMOVE_CARDS', cards.map(c => c._id));
 			} else {
 				player.send('$ALERT', { message: '裁判无法出卡' });
 			}
@@ -62,6 +62,7 @@ class Room extends Channel {
 
 	enter(player, spectate) {
 		if (!spectate && !this.isGamePlayersFull()) {
+			player.score = 0;
 			this.gamePlayers.push(player);
 			super.enter(player);
 			this.broadcast('$ENTER', { nickname: player.nickname, uuid: player.uuid, spectate: false, host: this.host === player }, player);
@@ -69,6 +70,7 @@ class Room extends Channel {
 			this.roomChange(true);
 			this.checkHost();
 		} else if (!this.isSpectatorsFull()) {
+			player.score = 0;
 			this.spectators.push(player);
 			super.enter(player);
 			this.broadcast('$ENTER', { nickname: player.nickname, uuid: player.uuid, spectate: true, host: false }, player);
@@ -88,7 +90,7 @@ class Room extends Channel {
 		this.broadcast('$LEAVE', { uuid: player.uuid, nickname: player.nickname }, player);
 		this.checkHost();
 
-		if(this.game && this.game.currentRoundPlayers.includes(player)){
+		if (this.game && this.game.currentRoundPlayers.includes(player)) {
 			this.game.onPlayerLeave(player);
 		}
 
@@ -99,6 +101,7 @@ class Room extends Channel {
 
 	joinGamers(player) {
 		if (!this.isGamePlayersFull()) {
+			player.score = 0;
 			this.spectators = this.spectators.filter(p => p !== player);
 			this.gamePlayers.push(player);
 			this.broadcast('$JOIN', { uuid: player.uuid, nickname: player.nickname });
@@ -116,6 +119,9 @@ class Room extends Channel {
 			this.broadcast('$SPECTATE', { uuid: player.uuid, nickname: player.nickname });
 			this.checkHost();
 			this.roomChange(true);
+			if (this.game && this.game.currentRoundPlayers.includes(player)) {
+				this.game.onPlayerLeave(player);
+			}
 		} else {
 			player.send('$ALERT', { message: '观众已满，无法加入！' });
 		}
@@ -179,8 +185,9 @@ class Room extends Channel {
 			password: !!this.password,
 			blackDecks: this.blackDecks.map(b => decks.find(d => d.id === b).name),
 			whiteDecks: this.whiteDecks.map(w => decks.find(d => d.id === w).name),
-			players: this.gamePlayers.map(p => ({ uuid: p.uuid, nickname: p.nickname, host: this.host === p })),
+			players: this.gamePlayers.map(p => ({ uuid: p.uuid, nickname: p.nickname, host: this.host === p, score: p.score || 0 })),
 			spectators: this.spectators.map(p => ({ uuid: p.uuid, nickname: p.nickname })),
+			game: this.game && this.game.getGameInfo()
 		}
 	}
 
