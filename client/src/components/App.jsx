@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import whevent from 'whevent';
 import server from '../services/server';
 import global from '../services/global';
+import config from '../services/config';
 import Login from './views/Login';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -48,6 +49,7 @@ export default class App extends Component {
 	onLoggedIn({ uuid, nickname }) {
 		global.uuid = uuid;
 		global.nickname = nickname;
+		alerter.info(`感谢您参与测试《反人类卡牌游戏》，当前游戏版本：${config.get('version')}`);
 		server.send('$LOBBY');
 	}
 

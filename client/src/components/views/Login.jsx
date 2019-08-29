@@ -4,6 +4,7 @@ import alerter from '../../utils/alerter';
 import whevent from 'whevent';
 import Button from '../common/Button';
 import Input from '../common/Input';
+import config from '../../services/config';
 
 
 export default class Login extends Component {
@@ -30,7 +31,7 @@ export default class Login extends Component {
 		whevent.unbind('$ALERT', this.onAlert, this);
 	}
 
-	onAlert(){
+	onAlert() {
 		this.setState({ connecting: false });
 	}
 
@@ -44,7 +45,7 @@ export default class Login extends Component {
 
 	onOpen() {
 		const { nickname, placeholder } = this.state;
-		server.send('$LOGIN', { nickname: nickname || placeholder });
+		server.send('$LOGIN', { nickname: nickname || placeholder, version: config.get('version') });
 	}
 
 	onNicknameChange = nickname => {
