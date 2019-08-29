@@ -15,7 +15,6 @@ import WhiteCard from './room/WhiteCard';
 
 export default class Room extends Component {
 	state = {
-		started: false,
 		whiteCards: [],
 		blackCard: null,
 		blanks: 0,
@@ -37,6 +36,7 @@ export default class Room extends Component {
 		whevent.bind('$JOIN', this.onJoin, this);
 		whevent.bind('$SPECTATE', this.onSpectate, this);
 		whevent.bind('$START', this.onGameStart, this);
+		whevent.bind('$STOP', this.onGameStop, this);
 		whevent.bind('$NEW_ROUND', this.onNewRound, this);
 		whevent.bind('$WHITE', this.onGetWhiteCards, this);
 		whevent.bind('$PICKED', this.onPlayerPicked, this);
@@ -54,6 +54,7 @@ export default class Room extends Component {
 		whevent.unbind('$JOIN', this.onJoin, this);
 		whevent.unbind('$SPECTATE', this.onSpectate, this);
 		whevent.unbind('$START', this.onGameStart, this);
+		whevent.unbind('$STOP', this.onGameStop, this);
 		whevent.unbind('$NEW_ROUND', this.onNewRound, this);
 		whevent.unbind('$WHITE', this.onGetWhiteCards, this);
 		whevent.unbind('$PICKED', this.onPlayerPicked, this);
@@ -82,12 +83,22 @@ export default class Room extends Component {
 			p.picked = false;
 			p.won = false;
 		});
+
 		let player = players.find(p => p.uuid === czar.uuid);
 		if (player) {
 			player.czar = true;
 		}
 
-		this.setState({ blackCard, blanks: blackCard.text.split('_').length - 1, players, phase: global.uuid === czar.uuid ? 'WAITING' : 'PICKING' });
+		this.setState({ 
+			phase: global.uuid === czar.uuid ? 'WAITING' : 'PICKING',
+			blackCard, 
+			blanks: blackCard.text.split('_').length - 1, 
+			players, 
+			chosen: [], 
+			judgingGroups: [], 
+			peek: null, 
+			winnerGroup: null 
+		});
 	}
 
 	onPlayerPicked({ uuid, nickname }) {
@@ -108,7 +119,25 @@ export default class Room extends Component {
 	}
 
 	onGameStart() {
-		this.setState({ started: true });
+		// this.setState({ phase: waiting });
+	}
+
+	onGameStop() {
+		const players = [...this.state.players];
+		players.forEach(p => {
+			p.czar = false;
+			p.won = false;
+			p.picked = false;
+		});
+		this.setState({ 
+			phase: 'STOPPED', 
+			whiteCards: [], 
+			blackCard: null, 
+			chosen: [], 
+			judgingGroups: [], 
+			peek: null, 
+			winnerGroup: null 
+		})
 	}
 
 	onSomeoneEnter(player) {
@@ -184,7 +213,7 @@ export default class Room extends Component {
 	}
 
 	onClickStartGame = () => {
-		if (this.state.started) return;
+		if (this.state.phase !== 'STOPPED') return;
 		if (!this.isMeHost()) return;
 		if (this.state.players.length < 2) {
 			alerter.alert('玩家过少，无法开始游戏');
@@ -214,7 +243,7 @@ export default class Room extends Component {
 	}
 
 	render() {
-		const { id, name, password, blackDecks, whiteDecks, players, spectators, started, blackCard, whiteCards, chosen, peek, judgingGroups, winnerGroup, phase } = this.state;
+		const { id, name, password, blackDecks, whiteDecks, players, spectators, blackCard, whiteCards, chosen, peek, judgingGroups, winnerGroup, phase } = this.state;
 		const winner = players.find(p => p.won);
 		const czar = players.find(p => p.czar);
 		return (
@@ -248,7 +277,7 @@ export default class Room extends Component {
 									return replacements;
 								})()}
 							/> : <BlackCard />}
-						{!started && this.isMeHost() && <Button onClick={this.onClickStartGame} className="Room-StartButton" color="#c87">开始游戏</Button>}
+						{phase === 'STOPPED' && this.isMeHost() && <Button onClick={this.onClickStartGame} className="Room-StartButton" color="#c87">开始游戏</Button>}
 						<Timer percentage={1} />
 					</div>
 					<div className="Room-Chat">

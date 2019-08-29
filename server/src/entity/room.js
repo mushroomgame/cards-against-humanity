@@ -88,6 +88,10 @@ class Room extends Channel {
 		this.broadcast('$LEAVE', { uuid: player.uuid, nickname: player.nickname }, player);
 		this.checkHost();
 
+		if(this.game && this.game.currentRoundPlayers.includes(player)){
+			this.game.onPlayerLeave(player);
+		}
+
 		if (this.players.length === 0) {
 			this.destroy();
 		}

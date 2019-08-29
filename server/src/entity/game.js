@@ -2,25 +2,33 @@ const cardService = require('../services/cardService');
 
 class Game {
 	constructor(room, blackDeck, whiteDeck) {
-		console.log(blackDeck, whiteDeck);
 		this.room = room;
 		this.blackDeck = blackDeck;
 		this.whiteDeck = whiteDeck;
-		this.blackCards = [...this.blackDeck];
-		this.playedBlackCards = [];
-		this.whiteCards = [...this.whiteDeck];
-		this.playedWhiteCards = [];
-		this.hands = new Map();
-		this.shuffle(true);
-		this.shuffle(false);
-		this.round = 0;
-		this.czar = null;
-		this.czarIndex = 0;
 		this.phase = 'STOPPED';	// STOPPED, PICKING, JUDGING, SHOWING
 	}
 
 	start() {
-		this.round++;
+		this.blackCards = [...this.blackDeck];
+		this.whiteCards = [...this.whiteDeck];
+		this.playedBlackCards = [];
+		this.playedWhiteCards = [];
+		this.hands = new Map();
+		this.round = 0;
+		this.czar = null;
+		this.czarIndex = 0;
+		this.shuffle(true);
+		this.shuffle(false);
+		this.nextRound();
+		// let round = this.round;
+		// setTimeout(()=>{
+		// 	if(this.round === round && this.phase === 'PICKING'){
+
+		// 	}
+		// }, 5000);
+	}
+
+	nextRound(){
 		this.currentRoundPlayers = [...this.room.gamePlayers];
 		this.pickedCards = new Map();
 
@@ -34,13 +42,23 @@ class Game {
 
 		this.room.broadcast('$NEW_ROUND', { blackCard, czar: { uuid: this.czar.uuid, nickname: this.czar.nickname } });
 		this.dealWhiteCards(...this.room.gamePlayers);
+	}
 
-		// let round = this.round;
-		// setTimeout(()=>{
-		// 	if(this.round === round && this.phase === 'PICKING'){
+	stop() {
+		this.phase = 'STOPPED';
+		this.currentRoundPlayers.forEach(p => this.returnAllCardsOfPlayer(p));
+		this.room.broadcast('$STOP');
+	}
 
-		// 	}
-		// }, 5000);
+	onPlayerLeave(player) {
+		this.returnAllCardsOfPlayer(player);
+		this.currentRoundPlayers = this.currentRoundPlayers.filter(p => p !== player);
+		if (this.czar === player) {
+			// TODO: next round
+			this.stop();
+		} else if (this.currentRoundPlayers.length < 2) {
+			this.stop();
+		}
 	}
 
 	setWinner(uuid) {
@@ -49,6 +67,10 @@ class Game {
 		const nickname = (player && player.nickname) || '';
 		this.phase = 'WAITING';
 		this.room.broadcast('$WINNER', { uuid, nickname, cards });
+
+		setTimeout(()=>{
+			this.nextRound();
+		}, 2000);
 	}
 
 	judging() {
@@ -97,6 +119,18 @@ class Game {
 		return card;
 	}
 
+	returnAllCardsOfPlayer(player) {
+		let cards = this.getHandCards(player);
+		if (cards && cards.length > 0) {
+			cards.forEach(c => this.returnWhiteCard(c));
+			this.hands.delete(player.uuid);
+		}
+	}
+
+	returnWhiteCard(card) {
+		this.playedWhiteCards.push(card);
+	}
+
 	pickWhiteCards(player, cards) {
 		let hands = this.getHandCards(player);
 		if (hands) {
@@ -110,7 +144,7 @@ class Game {
 			let card = this.whiteDeck.find(c => c._id === _c._id);
 			pickedCards.push(card);
 			if (card) {
-				this.playedWhiteCards.push(card);
+				this.returnWhiteCard(card);
 			}
 		});
 
