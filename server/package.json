@@ -12,7 +12,8 @@
   },
   "devDependencies": {},
   "scripts": {
-    "start": "nodemon index.js"
+    "start": "forever start -w index.js",
+    "daemon": "forever start -l logs/access.log -e logs/error.log -w -a index.js"
   },
   "keywords": [],
   "author": "",
