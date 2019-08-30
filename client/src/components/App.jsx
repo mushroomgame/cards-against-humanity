@@ -32,7 +32,7 @@ export default class App extends Component {
 		whevent.bind('MANAGE_CARDS', this.onManageCards, this);
 
 		// test
-		// this.onManageCards();
+		// this.onManageCards('white');
 	}
 
 	componentWillUnmount() {
@@ -81,8 +81,8 @@ export default class App extends Component {
 		whevent.call('POPUP', 'CardCreation', popup);
 	}
 
-	onManageCards(){
-		const popup = <CardManager />;
+	onManageCards(type){
+		const popup = <CardManager type={type} />;
 		whevent.call('POPUP', 'CardsManager', popup);
 	}
 

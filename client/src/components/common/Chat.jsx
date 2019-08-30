@@ -165,10 +165,10 @@ export default class Chat extends Component {
 					whevent.call('CREATE_CARD_CLICKED');
 					break;
 				case 'manage':
-					if (!params || params[0] !== 'wheatup') {
-						alerter.alert('权限不足');
+					if (!params || !['white', 'black'].includes(params[0])) {
+						alerter.alert('未知的卡牌类型');
 					} else {
-						whevent.call('MANAGE_CARDS');
+						whevent.call('MANAGE_CARDS', params[0]);
 					}
 					break;
 				default:

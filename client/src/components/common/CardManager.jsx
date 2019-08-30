@@ -6,14 +6,14 @@ import Button from './Button';
 
 class CardManager extends Component {
 	state = {
-		whiteCards: [],
-		blackCards: [],
+		cards: [],
 		headers: [
 			{ label: 'id', value: '_id', flex: 1 },
 			{ label: '内容', value: 'text', editable: true, flex: 4 },
 			{ label: '作者', value: 'author', editable: true, flex: 1 },
+			{ label: '游玩数', value: 'plays', flex: 1 },
+			{ label: '评价', value: 'votes', flex: 1 },
 			{ label: '提交时间', value: 'created_at', flex: 2 },
-			{ label: '更新时间', value: 'updated_at', flex: 2 },
 			{ label: '状态', value: 'status', flex: 1 },
 			{ label: '操作', value: 'operations', flex: 1 }
 		]
@@ -21,8 +21,8 @@ class CardManager extends Component {
 
 
 	async componentDidMount() {
-		const blackCards = await cardService.getBlackCards();
-		this.setState({ blackCards });
+		const cards = this.props.type === 'black' ? await cardService.getBlackCards() : await cardService.getWhiteCards();
+		this.setState({ cards });
 	}
 
 	onDrawCell = (data, header) => {
@@ -65,11 +65,11 @@ class CardManager extends Component {
 	}
 
 	render() {
-		const { headers, blackCards, whiteCards } = this.state;
+		const { headers, cards } = this.state;
 		return (
 			<section className="CardManager">
 				<h1 className="CardManager-Title">管理卡牌</h1>
-				<Table headers={headers} data={blackCards} onDrawCell={this.onDrawCell} onClickCell={this.onClickCell} />
+				<Table headers={headers} data={cards} onDrawCell={this.onDrawCell} onClickCell={this.onClickCell} />
 			</section>
 		);
 	}
