@@ -175,6 +175,8 @@ export default class Chat extends Component {
 					alerter.alert('未知指令');
 					break;
 			}
+		} else if (message.length > 144) {
+			alerter.alert('信息过长');
 		} else {
 			sentMessages.push(message);
 			pointer = sentMessages.length;
@@ -187,6 +189,8 @@ export default class Chat extends Component {
 	onClickMute = () => {
 		global.mute = !global.mute;
 		this.setState({ mute: global.mute });
+		whevent.call('READ','','user');
+		whevent.call('READ','','system');
 	}
 
 	onMessageChange = message => {
