@@ -1,0 +1,31 @@
+.Pagination {
+	display: flex;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	justify-content: center;
+	align-items: center;
+
+	li {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		padding: 1rem;
+		border-radius: 1rem;
+		width: 4rem;
+		height: 4rem;
+		background-color: #aaa;
+		color: white;
+		position: relative;
+		cursor: pointer;
+		transition: all .2s;
+
+		&:not(:first-of-type){
+			margin-left: 1rem;
+		}
+
+		&.Current {
+			background-color: #6a9;
+		}
+	}
+}

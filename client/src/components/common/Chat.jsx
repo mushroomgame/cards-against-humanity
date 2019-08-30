@@ -153,11 +153,35 @@ export default class Chat extends Component {
 		if (!message) {
 			alerter.alert('请输入聊天内容!');
 			return;
+		} else if (message.startsWith('!')) {
+			let result = /^\!(\w+)\s?(.+)?$/.exec(message);
+			const command = result[1];
+			let params = result[2];
+			if (params) {
+				params = params.split(' ').filter(p => p);
+			}
+			switch (command) {
+				case 'card':
+					whevent.call('CREATE_CARD_CLICKED');
+					break;
+				case 'manage':
+					if (!params || params[0] !== 'wheatup') {
+						alerter.alert('权限不足');
+					} else {
+						whevent.call('MANAGE_CARDS');
+					}
+					break;
+				default:
+					alerter.alert('未知指令');
+					break;
+			}
+		} else {
+			sentMessages.push(message);
+			pointer = sentMessages.length;
+			server.send('$CHAT', { message: this.state.message });
 		}
-		sentMessages.push(message);
-		pointer = sentMessages.length;
 		this.setState({ message: '' });
-		server.send('$CHAT', { message: this.state.message });
+
 	}
 
 	onClickMute = () => {

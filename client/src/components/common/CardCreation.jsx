@@ -2,8 +2,7 @@ import React, { Component } from 'react';
 import Form from './Form';
 import alerter from '../../utils/alerter';
 import ProgressBar from './ProgressBar';
-import http from '../../services/core/http';
-import config from '../../services/config';
+import { submitCard } from '../../services/cardService';
 import global from '../../services/global';
 
 let data = [
@@ -61,7 +60,7 @@ class CardCreation extends Component {
 		let completed = 0;
 		this.setState({ total: cards.length, completed, submitting: true });
 		for (let card of cards) {
-			console.log(await this.uploadCard(card));
+			await submitCard(card);
 			completed++;
 			this.setState({ completed });
 		}
@@ -69,14 +68,6 @@ class CardCreation extends Component {
 		data.find(d => d.name === 'text').value = '';
 		data.find(d => d.name === 'tags').value = '';
 		this.setState({ submitting: false });
-	}
-
-	async uploadCard(card) {
-		const cardsApiBase = config.get('cardsApiBase');
-		return (await http.post(`${cardsApiBase}/${card.type}cards`, {
-			text: card.text,
-			tags: JSON.stringify(card.tags)
-		})).data;
 	}
 
 	validateCard(type, text) {

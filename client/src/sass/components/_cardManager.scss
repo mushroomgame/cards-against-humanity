@@ -1,0 +1,50 @@
+.CardManager {
+	width: 90vw;
+	height: 90vh;
+	position: relative;
+
+	&-Title {
+		text-align: center;
+		font-size: 3rem;
+		margin: 0;
+	}
+
+	&-Operations {
+		display: flex;
+		.Button {
+			padding: 0.5rem 1rem;
+			font-size: 2rem;
+			&:not(:first-of-type) {
+				margin-left: 0.5rem;
+			}
+			[class^='icon'] {
+				margin: 0;
+			}
+		}
+	}
+
+	.Table {
+		position: relative;
+		width: 100%;
+		height: calc(100% - 10rem);
+		table{
+			width: 100%;
+			height: 100%;
+			display: flex;
+			overflow-y: auto;
+			flex-direction: column;
+
+			thead, tbody {
+				display: flex;
+				flex-direction: column;
+				tr {
+					flex: 1 !important;
+				}
+			}
+
+			tbody {
+				flex: 1;
+			}
+		}
+	}
+}

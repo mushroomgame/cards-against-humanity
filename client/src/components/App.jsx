@@ -13,6 +13,7 @@ import Popup from './common/Popup';
 import Loading from './common/Loading';
 import Room from './views/Room';
 import CardCreation from './common/CardCreation';
+import CardManager from './common/CardManager';
 
 export default class App extends Component {
 
@@ -28,6 +29,10 @@ export default class App extends Component {
 		whevent.bind('$ALERT', this.onAlert, this);
 
 		whevent.bind('CREATE_CARD_CLICKED', this.onCreateCard, this);
+		whevent.bind('MANAGE_CARDS', this.onManageCards, this);
+
+		// test
+		// this.onManageCards();
 	}
 
 	componentWillUnmount() {
@@ -38,6 +43,7 @@ export default class App extends Component {
 		whevent.unbind('$ALERT', this.onAlert, this);
 
 		whevent.unbind('CREATE_CARD_CLICKED', this.onCreateCard, this);
+		whevent.unbind('MANAGE_CARDS', this.onManageCards, this);
 	}
 
 	onAlert({ message }) {
@@ -72,7 +78,12 @@ export default class App extends Component {
 
 	onCreateCard(){
 		const popup = <CardCreation />;
-		whevent.call('POPUP', 'ROOM_CREATION', popup);
+		whevent.call('POPUP', 'CardCreation', popup);
+	}
+
+	onManageCards(){
+		const popup = <CardManager />;
+		whevent.call('POPUP', 'CardsManager', popup);
 	}
 
 	renderView() {

@@ -71,3 +71,8 @@ textarea {
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 }
+
+.XFlip {
+	display: inline-block;
+	transform: scaleX(-1) !important;
+}
