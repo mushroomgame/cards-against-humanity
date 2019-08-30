@@ -1,0 +1,28 @@
+.CardCreation {
+	width: 42rem;
+	&-Title {
+		text-align: center;
+		font-size: 2.5rem;
+		margin: 0;
+		margin-bottom: 1rem;
+		padding-bottom: 1rem;
+		border-bottom: solid 1px rgba(0,0,0,.1);
+	}
+
+	&-Help {
+		display: block;
+
+		font-size: 1.4rem;
+		color: #888;
+		&::before {
+			content: '*';
+			color: #965;
+			margin-right: 0.5rem;
+		}
+		margin-bottom: 1rem;
+	}
+
+	.ProgressBar {
+		margin-top: 1rem;
+	}
+}

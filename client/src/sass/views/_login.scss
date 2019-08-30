@@ -2,6 +2,17 @@
 	padding: 4rem;
 	background-color: #eee;
 	border-radius: 0.5rem;
+	text-align: center;
+
+	h1 {
+		margin: 0;
+		font-size: 3rem;
+	}
+
+	h2 {
+		margin: 0;
+		margin-bottom: 1rem;
+	}
 
 	&-Input {
 		// text-align: center;

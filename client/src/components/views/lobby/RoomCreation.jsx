@@ -43,7 +43,6 @@ class RoomCreation extends Component {
 			value: decks.map(d => ({
 				id: d.id,
 				name: d.name,
-				// name: `${d.name}(${d.white}张)`,
 				checked: true
 			}))
 		};
@@ -55,7 +54,6 @@ class RoomCreation extends Component {
 			value: decks.map(d => ({
 				id: d.id,
 				name: d.name,
-				// name: `${d.name}(${d.black}张)`,
 				checked: true
 			}))
 		};

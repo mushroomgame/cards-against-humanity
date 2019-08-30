@@ -12,6 +12,7 @@ import TTS from './common/TTS';
 import Popup from './common/Popup';
 import Loading from './common/Loading';
 import Room from './views/Room';
+import CardCreation from './common/CardCreation';
 
 export default class App extends Component {
 
@@ -25,6 +26,8 @@ export default class App extends Component {
 		whevent.bind('$LOBBY', this.onGetInLobby, this);
 		whevent.bind('$ROOM', this.onGetInRoom, this);
 		whevent.bind('$ALERT', this.onAlert, this);
+
+		whevent.bind('CREATE_CARD_CLICKED', this.onCreateCard, this);
 	}
 
 	componentWillUnmount() {
@@ -33,6 +36,8 @@ export default class App extends Component {
 		whevent.unbind('$LOBBY', this.onGetInLobby, this);
 		whevent.unbind('$ROOM', this.onGetInRoom, this);
 		whevent.unbind('$ALERT', this.onAlert, this);
+
+		whevent.unbind('CREATE_CARD_CLICKED', this.onCreateCard, this);
 	}
 
 	onAlert({ message }) {
@@ -63,6 +68,11 @@ export default class App extends Component {
 		global.room = data;
 		whevent.call('POPUP');
 		this.setState({ phase: 'ROOM' });
+	}
+
+	onCreateCard(){
+		const popup = <CardCreation />;
+		whevent.call('POPUP', 'ROOM_CREATION', popup);
 	}
 
 	renderView() {

@@ -25,8 +25,14 @@ html {
 }
 
 input[type='text'],
-input[type='password'] {
+input[type='password'],
+textarea {
 	font-size: inherit;
+	resize: none;
+}
+
+textarea {
+	height: 12rem;
 }
 
 [data-title] {

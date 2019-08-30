@@ -20,7 +20,7 @@ export default class Form extends Component {
 		this.setState({ data });
 	}
 
-	drawItem({ type, name, value, boxes, placeholder }) {
+	drawItem({ type, name, value, placeholder, data }) {
 		switch (type) {
 			case 'password':
 				return <input className="Input Form-Item-Input Form-Item-Input_Password" type="password" id={name} name={name} value={value} onChange={e => this.onChange(name, e.target.value)} />;
@@ -36,7 +36,17 @@ export default class Form extends Component {
 						<label className="Form-Item-Input Form-Item-Input_Checkbox" htmlFor={`${name}_${c.id}`}>{c.name}</label>
 					</div>
 				)}</div>;
-
+			case 'radio':
+				return <div className="Form-Item-Group Form-Item-Group_Radio" >{data.map((r, index) =>
+					<div key={`checkboxes_${index}`} className="Form-Item-Group-Item">
+						<input type="radio" id={`${name}_${r.name}`} name={`${name}`} value={r.value} checked={value === r.value && 'checked'} onChange={e => {
+							this.onChange(name, e.target.value);
+						}} />
+						<label className="Form-Item-Input Form-Item-Input_Radio" htmlFor={`${name}_${r.name}`}>{r.name}</label>
+					</div>
+				)}</div>;
+			case 'textarea':
+				return <textarea className="Input Form-Item-Input Form-Item-Input_TextArea" placeholder={placeholder} id={name} name={name} value={value} onChange={e => this.onChange(name, e.target.value)}></textarea>;
 			case 'text':
 			default:
 				return <input className="Input Form-Item-Input Form-Item-Input_Text" placeholder={placeholder} type="text" id={name} name={name} value={value} onChange={e => this.onChange(name, e.target.value)} />;

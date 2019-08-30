@@ -1,5 +1,6 @@
 {
 	"wsserver": "ws://localhost:2333",
+	"cardsApiBase": "http://cah.nut.moe",
 	"allowSendImage": true,
 	"version": "alpha 1.0.3"
 }

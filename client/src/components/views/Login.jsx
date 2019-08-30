@@ -75,6 +75,7 @@ export default class Login extends Component {
 		return (
 			<section className='Login'>
 				<h1>Cards Against Humanity</h1>
+				<h2>反人类卡牌游戏</h2>
 				<Input className="Login-Input" onChange={this.onNicknameChange} placeholder={this.state.placeholder} value={this.state.nickname} />
 				<Button className="Login-Button Button Button_Wide" color="#999" disabled={this.state.connecting} onClick={this.onClickLogin}>进入游戏</Button>
 			</section>

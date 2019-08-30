@@ -1,0 +1,28 @@
+.ProgressBar {
+	--progress: 1;
+	position: relative;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding: 2px;
+	border-radius: 0.5rem;
+	background-color: #bbb;
+	overflow: hidden;
+
+	&-Bar {
+		position: absolute;
+		left: 0;
+		top: 0;
+		height: 100%;
+		transition: width .2s ease-out;
+		width: calc(var(--progress) * 100%);
+		background-color: #396;
+	}
+
+	&-Title {
+		display: block;
+		text-align: center;
+		z-index: 1;
+		color: white;
+	}
+}

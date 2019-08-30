@@ -19,7 +19,21 @@
 		}
 	}
 
+	[type='radio'] {
+		display: none;
+
+		&:checked ~ .Form-Item-Input_Radio {
+			color: #384;
+			background-color: #afc;
+		}
+
+		&:not(:checked) ~ .Form-Item-Input_Radio {
+			background-color: #eee;
+		}
+	}
+
 	&-Items {
+		margin-bottom: 3rem;
 	}
 
 	&-Buttons {
@@ -45,6 +59,17 @@
 			}
 
 			&_Password {
+			}
+
+			&_Radio {
+				padding: 0.5rem 1rem;
+				border: solid 1px currentColor;
+				cursor: pointer;
+				transition: all .2s;
+
+				&:hover {
+					color: #a08c31 !important;
+				}
 			}
 
 			&_Checkbox {
@@ -78,6 +103,30 @@
 				margin-bottom: 0.5rem;
 				&:not(:last-of-type) {
 					margin-right: 1rem;
+				}
+			}
+
+			&_Radio {
+				.Form-Item-Group-Item {
+					margin: 0;
+
+					&:first-child {
+						.Form-Item-Input {
+							border-top-left-radius: 0.5rem;
+							border-bottom-left-radius: 0.5rem;
+						}
+					}
+
+					&:not(:first-child) {
+						margin-left: -1px;
+					}
+
+					&:last-child {
+						.Form-Item-Input {
+							border-top-right-radius: 0.5rem;
+							border-bottom-right-radius: 0.5rem;
+						}
+					}
 				}
 			}
 		}
