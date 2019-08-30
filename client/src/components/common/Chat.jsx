@@ -189,8 +189,8 @@ export default class Chat extends Component {
 	onClickMute = () => {
 		global.mute = !global.mute;
 		this.setState({ mute: global.mute });
-		whevent.call('READ','','user');
-		whevent.call('READ','','system');
+		document.getElementById('TTS_system').pause();
+		document.getElementById('TTS_user').pause();
 	}
 
 	onMessageChange = message => {

@@ -19,7 +19,11 @@ class TTS extends Component {
 		let obj = {};
 		obj[from] = text;
 		this.setState(obj, () => {
-			document.getElementById('TTS_' + from).play();
+			try {
+				document.getElementById('TTS_' + from).play();
+			} catch {
+				console.log('无法播放音频');
+			}
 		});
 	}
 
