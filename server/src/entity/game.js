@@ -175,7 +175,7 @@ class Game {
 		this.phase = 'WAITING';
 		this.room.broadcast('$WINNER', { uuid, nickname, cards, score, streak });
 
-		let time = 10000;
+		let time = 6000;
 		this.room.broadcast('$TIMER', { time });
 		setTimeout(() => {
 			this.nextRound();
