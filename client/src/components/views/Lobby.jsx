@@ -4,9 +4,11 @@ import Chat from '../common/Chat';
 import RoomTag from './lobby/RoomTag';
 import Button from '../common/Button';
 import RoomCreation from './lobby/RoomCreation';
+import config from '../../services/config';
 
 import global from '../../services/global';
 import PlayerList from '../common/PlayerList';
+import Welcome from '../common/Welcome';
 
 class Lobby extends Component {
 	state = {
@@ -25,6 +27,11 @@ class Lobby extends Component {
 		whevent.bind('CREATE_ROOM_CLICKED', this.onClickCreateRoom, this);
 
 		const { rooms, players } = global.lobby;
+		if (!global.pushed) {
+			global.pushed = true;
+			const popup = <Welcome />;
+			whevent.call('POPUP', 'WELCOME', popup);
+		}
 		this.setState({ rooms, players });
 	}
 

@@ -49,7 +49,6 @@ export default class App extends Component {
 	onLoggedIn({ uuid, nickname }) {
 		global.uuid = uuid;
 		global.nickname = nickname;
-		alerter.info(`感谢您参与测试《反人类卡牌游戏》，当前游戏版本：${config.get('version')}`);
 		server.send('$LOBBY');
 	}
 

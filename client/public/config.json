@@ -1,5 +1,5 @@
 {
 	"wsserver": "ws://localhost:2333",
 	"allowSendImage": true,
-	"version": "alpha 1.0.2"
+	"version": "alpha 1.0.3"
 }
