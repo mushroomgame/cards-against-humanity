@@ -32,6 +32,6 @@
 ### 服务端部署方法
 
 1. 进入 `server` 文件夹。
-2. 运行 `npm i forever -g` 安装 `forever`。
+2. 运行 `npm i nodemon -g` 安装 `nodemon`。
 3. 运行 `npm i` 安装所需模组。
 4. 运行 `npm start` 开始运行服务器。
