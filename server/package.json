@@ -12,7 +12,8 @@
   },
   "devDependencies": {},
   "scripts": {
-    "start": "nodemon index.js"
+    "start": "nodemon index.js",
+    "daemon": "forever start -w index.js"
   },
   "keywords": [],
   "author": "",
