@@ -174,8 +174,14 @@ export default class Chat extends Component {
 				case 'reload':
 					server.send('$RELOAD');
 					break;
-				case 'authorize':
-					global.key = params[0];
+				case 'key':
+					if (params && params[0]) {
+						global.secret = params[0];
+						alerter.info('密钥已设置');
+						console.log(global.key);
+					} else {
+						alerter.alert('请输入密钥');
+					}
 					break;
 				default:
 					alerter.alert('未知指令');
