@@ -38,7 +38,11 @@ export function submitCard(card) {
 			text: card.text,
 			tags: JSON.stringify(card.tags)
 		}).then(d => {
-			resolve(d.data);
+			if(d.data.status === 'success'){
+				resolve(d.data);
+			}else{
+				reject(d.data);
+			}
 		}).catch(ex => reject(ex));
 	});
 }
@@ -50,7 +54,11 @@ export function alterCard(id, type, changes) {
 			delete changes._id;
 		}
 		http.put(`${cardsApiBase}/${type}cards/${id}`, changes).then(d => {
-			resolve(d);
+			if(d.data.status === 'success'){
+				resolve(d.data);
+			}else{
+				reject(d.data);
+			}
 		}).catch(ex => reject(ex));
 	});
 }
@@ -59,7 +67,11 @@ export function deleteCard(id, type) {
 	return new Promise(function (resolve, reject) {
 		const cardsApiBase = config.get('cardsApiBase');
 		http.delete(`${cardsApiBase}/${type}cards/${id}`).then(d => {
-			resolve(d);
+			if(d.data.status === 'success'){
+				resolve(d.data);
+			}else{
+				reject(d.data);
+			}
 		}).catch(ex => reject(ex));
 	});
 }

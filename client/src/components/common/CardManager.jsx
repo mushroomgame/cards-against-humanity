@@ -6,6 +6,7 @@ import Button from './Button';
 import whevent from 'whevent';
 import Popup from './Popup';
 import Form from './Form';
+import alerter from '../../utils/alerter';
 
 class CardManager extends Component {
 	state = {
@@ -78,11 +79,16 @@ class CardManager extends Component {
 					c[header] = changes[header];
 				}
 				whevent.call('LOADING', '提交中');
-				await cardService.alterCard(card._id, this.props.type, changes);
+				try {
+					await cardService.alterCard(card._id, this.props.type, changes);
+					this.setState({ cards });
+					whevent.call('POPUP', 'ALTER_CARD');
+				} catch (ex) {
+					if (ex.reason) {
+						alerter.alert(ex.reason);
+					}
+				}
 				whevent.call('LOADING');
-				whevent.call('POPUP', 'ALTER_CARD');
-
-				this.setState({ cards });
 			}
 
 			const popup = <Form onChange={onChange} data={data} buttons={[{ label: '提交', onClick: onSubmit, color: '#999' }]} />;
@@ -98,24 +104,36 @@ class CardManager extends Component {
 		const id = card._id;
 		const changes = { status: card.status === 1 ? 0 : 1 };
 		whevent.call('LOADING', '提交中...');
-		await cardService.alterCard(id, this.props.type, changes);
-		whevent.call('LOADING');
+		try {
+			await cardService.alterCard(id, this.props.type, changes);
 
-		const cards = [...this.state.cards];
-		let c = cards.find(c => c._id === card._id);
-		if (c) {
-			c.status = c.status === 1 ? 0 : 1;
-			this.setState({ cards });
+			const cards = [...this.state.cards];
+			let c = cards.find(c => c._id === card._id);
+			if (c) {
+				c.status = c.status === 1 ? 0 : 1;
+				this.setState({ cards });
+			}
+		} catch (ex) {
+			if (ex.reason) {
+				alerter.alert(ex.reason);
+			}
 		}
+		whevent.call('LOADING');
 	}
 
 	onClickDelete = async data => {
 		if (window.confirm(`确认删除卡牌【${data.text}】？`)) {
 			whevent.call('LOADING', '提交中...');
-			await cardService.deleteCard(data._id, this.props.type);
+			try {
+				await cardService.deleteCard(data._id, this.props.type);
+				const cards = [...this.state.cards].filter(c => c._id !== data._id);
+				this.setState({ cards });
+			} catch (ex) {
+				if (ex.reason) {
+					alerter.alert(ex.reason);
+				}
+			}
 			whevent.call('LOADING');
-			const cards = [...this.state.cards].filter(c => c._id !== data._id);
-			this.setState({ cards });
 		}
 	}
 
