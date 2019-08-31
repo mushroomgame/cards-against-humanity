@@ -38,9 +38,9 @@ export function submitCard(card) {
 			text: card.text,
 			tags: JSON.stringify(card.tags)
 		}).then(d => {
-			if(d.data.status === 'success'){
+			if (d.data.status === 'success') {
 				resolve(d.data);
-			}else{
+			} else {
 				reject(d.data);
 			}
 		}).catch(ex => reject(ex));
@@ -49,14 +49,15 @@ export function submitCard(card) {
 
 export function alterCard(id, type, changes) {
 	return new Promise(function (resolve, reject) {
+		changes.secret = config.get('secret');
 		const cardsApiBase = config.get('cardsApiBase');
 		if (changes._id) {
 			delete changes._id;
 		}
 		http.put(`${cardsApiBase}/${type}cards/${id}`, changes).then(d => {
-			if(d.data.status === 'success'){
+			if (d.data.status === 'success') {
 				resolve(d.data);
-			}else{
+			} else {
 				reject(d.data);
 			}
 		}).catch(ex => reject(ex));
@@ -66,10 +67,10 @@ export function alterCard(id, type, changes) {
 export function deleteCard(id, type) {
 	return new Promise(function (resolve, reject) {
 		const cardsApiBase = config.get('cardsApiBase');
-		http.delete(`${cardsApiBase}/${type}cards/${id}`).then(d => {
-			if(d.data.status === 'success'){
+		http.delete(`${cardsApiBase}/${type}cards/${id}`, { secret: config.get('secret') }).then(d => {
+			if (d.data.status === 'success') {
 				resolve(d.data);
-			}else{
+			} else {
 				reject(d.data);
 			}
 		}).catch(ex => reject(ex));

@@ -2,16 +2,16 @@ const cache = require('../core/cache');
 const config = require('config');
 const http = require('../core/http');
 
-function getDecks() {
-	return new Promise((resolve, reject) => {
-		const decks = [
-			{ id: 1, name: '基本', white: 193, black: 88 },
-			{ id: 2, name: 'A岛', white: 445, black: 156 },
-			{ id: 3, name: '玩家自制', white: 1123, black: 557 }
-		];
-		cache.decks = decks;
-		resolve(decks);
-	});
+async function getDecks(force) {
+	const blacks = await getBlackCards(force);
+	const whites = await getWhiteCards(force);
+
+	const decks = [
+		{ id: 1, name: '所有', white: whites.length, black: blacks.length }
+	];
+
+	cache.decks = decks;
+	return decks;
 }
 
 async function getBlackCards(force) {

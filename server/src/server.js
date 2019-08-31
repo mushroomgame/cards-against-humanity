@@ -34,8 +34,6 @@ class Server {
 		messageHandler.start();
 		new Lobby();
 		await cardService.getDecks();
-		await cardService.getWhiteCards();
-		await cardService.getBlackCards();
 		console.log(`WebSocket server is listening on port ${port}...`);
 	}
 

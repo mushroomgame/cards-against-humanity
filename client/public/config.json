@@ -2,5 +2,6 @@
 	"wsserver": "ws://localhost:2333",
 	"cardsApiBase": "https://cah.nut.moe/api",
 	"allowSendImage": true,
-	"version": "alpha 1.0.7"
+	"version": "alpha 1.0.8",
+	"secret": "super_strong_secret"
 }

@@ -4,7 +4,7 @@ const Lobby = require('../entity/lobby');
 const Room = require('../entity/room');
 const config = require('config');
 
-const { getDecksFromCache } = require('../services/cardService');
+const cardService = require('../services/cardService');
 
 class MessageHandler {
 	start() {
@@ -23,6 +23,12 @@ class MessageHandler {
 		whevent.bind('$START', this.onRequestStart, this);
 		whevent.bind('$PICK', this.onPickCard, this);
 		whevent.bind('$WINNER', this.onPickWinner, this);
+		whevent.bind('$RELOAD', this.onReloadCard, this);
+	}
+
+	async onReloadCard(player) {
+		await cardService.getDecks(true);
+		player.send('$ALERT', { message: '已重新读取卡牌，新卡牌仅在新开始的游戏生效！', type: 'info' })
 	}
 
 	onPickWinner(player, { uuid }) {
@@ -78,7 +84,7 @@ class MessageHandler {
 	}
 
 	onRequestDecks(player) {
-		player.send('$DECKS', getDecksFromCache());
+		player.send('$DECKS', cardService.getDecksFromCache());
 	}
 
 	onLogin(player, { nickname, version }) {

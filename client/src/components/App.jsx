@@ -46,9 +46,13 @@ export default class App extends Component {
 		whevent.unbind('MANAGE_CARDS', this.onManageCards, this);
 	}
 
-	onAlert({ message }) {
+	onAlert({ message, type }) {
 		whevent.call('LOADING');
-		alerter.alert(message);
+		if (!type) {
+			alerter.alert(message);
+		} else {
+			alerter[type](message);
+		}
 	}
 
 	onClosed() {
@@ -76,12 +80,12 @@ export default class App extends Component {
 		this.setState({ phase: 'ROOM' });
 	}
 
-	onCreateCard(){
+	onCreateCard() {
 		const popup = <CardCreation />;
 		whevent.call('POPUP', 'CardCreation', popup);
 	}
 
-	onManageCards(type){
+	onManageCards(type) {
 		const popup = <CardManager type={type} />;
 		whevent.call('POPUP', 'CardsManager', popup);
 	}

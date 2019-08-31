@@ -171,6 +171,9 @@ export default class Chat extends Component {
 						whevent.call('MANAGE_CARDS', params[0]);
 					}
 					break;
+				case 'reload':
+					server.send('$RELOAD');
+					break;
 				default:
 					alerter.alert('未知指令');
 					break;
