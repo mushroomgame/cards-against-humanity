@@ -10,6 +10,7 @@
 
 	&:not(.Active) {
 		animation: popup-container-end 0.2s both;
+		pointer-events: none;
 	}
 }
 
@@ -83,6 +84,5 @@
 
 	to {
 		opacity: 0;
-		pointer-events: none;
 	}
 }
