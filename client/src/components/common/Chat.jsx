@@ -174,6 +174,9 @@ export default class Chat extends Component {
 				case 'reload':
 					server.send('$RELOAD');
 					break;
+				case 'authorize':
+					global.key = params[0];
+					break;
 				default:
 					alerter.alert('未知指令');
 					break;

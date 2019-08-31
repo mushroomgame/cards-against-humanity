@@ -1,5 +1,6 @@
 import http from './core/http';
 import config from './config';
+import global from './global';
 
 export function getWhiteCards(tags) {
 	return new Promise(function (resolve, reject) {
@@ -49,7 +50,7 @@ export function submitCard(card) {
 
 export function alterCard(id, type, changes) {
 	return new Promise(function (resolve, reject) {
-		changes.secret = config.get('secret');
+		changes.secret = global.secret;
 		const cardsApiBase = config.get('cardsApiBase');
 		if (changes._id) {
 			delete changes._id;
@@ -67,7 +68,7 @@ export function alterCard(id, type, changes) {
 export function deleteCard(id, type) {
 	return new Promise(function (resolve, reject) {
 		const cardsApiBase = config.get('cardsApiBase');
-		http.delete(`${cardsApiBase}/${type}cards/${id}`, { secret: config.get('secret') }).then(d => {
+		http.delete(`${cardsApiBase}/${type}cards/${id}`, { secret: global.secret }).then(d => {
 			if (d.data.status === 'success') {
 				resolve(d.data);
 			} else {
