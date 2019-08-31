@@ -52,7 +52,7 @@ class CardCreation extends Component {
 		}
 
 		let tags = tagsRaw.split(',');
-		tags.push('玩家自制');
+		tags.push('#玩家自制');
 		tags.push('@' + global.nickname);
 		tags = [...new Set(tags)];
 
