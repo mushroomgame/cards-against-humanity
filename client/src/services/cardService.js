@@ -68,7 +68,7 @@ export function alterCard(id, type, changes) {
 export function deleteCard(id, type) {
 	return new Promise(function (resolve, reject) {
 		const cardsApiBase = config.get('cardsApiBase');
-		http.delete(`${cardsApiBase}/${type}cards/${id}`, { secret: global.secret }).then(d => {
+		http.delete(`${cardsApiBase}/${type}cards/${id}`, { data: { secret: global.secret } }).then(d => {
 			if (d.data.status === 'success') {
 				resolve(d.data);
 			} else {
