@@ -20,7 +20,7 @@ async function getBlackCards(force) {
 	} else {
 		const result = await http.get(config.get('apiBase') + '/blackcards');
 		if (result.data) {
-			cache.blackCards = result.data;
+			cache.blackCards = result.data.filter(c => c.status);
 			return cache.blackCards;
 		}
 	}
@@ -32,7 +32,7 @@ async function getWhiteCards(force) {
 	} else {
 		const result = await http.get(config.get('apiBase') + '/whitecards');
 		if (result.data) {
-			cache.whiteCards = result.data;
+			cache.whiteCards = result.data.filter(c => c.status);
 			return cache.whiteCards;
 		}
 	}

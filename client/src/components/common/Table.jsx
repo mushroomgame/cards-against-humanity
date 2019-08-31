@@ -15,7 +15,7 @@ class Table extends Component {
 	}
 
 	render() {
-		const { headers, data, onDrawCell, onDrawHead, onClickCell } = this.props;
+		const { headers, data, onDrawCell, onDrawHead, onClickCell, onCellChange } = this.props;
 		const { currentPage } = this.state;
 		const itemsPerPage = this.props.itemsPerPage || 10;
 		const totalPages = Math.ceil(this.props.data.length / itemsPerPage) || 1;
@@ -31,7 +31,7 @@ class Table extends Component {
 					</thead>
 					<tbody>{paginatedData.map((d, row) =>
 						<tr key={`row_${row}`}>{headers.map((h, col) =>
-							<td key={`cell_${row}_${col}`} onClick={() => onClickCell && onClickCell(d)} style={{ '--flex': h.flex || 1 }}>
+							<td data-header={h.value} key={`cell_${row}_${col}`} onClick={e => onClickCell && onClickCell(d, e)} style={{ '--flex': h.flex || 1 }}>
 								{(onDrawCell && onDrawCell(d, h.value)) || d[h.value]}
 							</td>
 						)}</tr>

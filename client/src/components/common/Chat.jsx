@@ -177,11 +177,12 @@ export default class Chat extends Component {
 			}
 		} else if (message.length > 144) {
 			alerter.alert('信息过长');
+			return;
 		} else {
-			sentMessages.push(message);
 			pointer = sentMessages.length;
 			server.send('$CHAT', { message: this.state.message });
 		}
+		sentMessages.push(message);
 		this.setState({ message: '' });
 
 	}

@@ -7,12 +7,12 @@ export function getWhiteCards(tags) {
 		http.get(url).then(d => {
 			let data = d.data;
 			data.forEach(d => {
-				if(d.tags){
+				if (d.tags) {
 					d.tags = JSON.parse(d.tags);
 				}
 			});
 			resolve(data);
-		});
+		}).catch(ex => reject(ex));
 	});
 }
 
@@ -22,12 +22,12 @@ export function getBlackCards(tags) {
 		http.get(url).then(d => {
 			let data = d.data;
 			data.forEach(d => {
-				if(d.tags){
+				if (d.tags) {
 					d.tags = JSON.parse(d.tags);
 				}
 			});
 			resolve(data);
-		});
+		}).catch(ex => reject(ex));
 	});
 }
 
@@ -39,12 +39,35 @@ export function submitCard(card) {
 			tags: JSON.stringify(card.tags)
 		}).then(d => {
 			resolve(d.data);
-		});
+		}).catch(ex => reject(ex));
+	});
+}
+
+export function alterCard(id, type, changes) {
+	return new Promise(function (resolve, reject) {
+		const cardsApiBase = config.get('cardsApiBase');
+		if (changes._id) {
+			delete changes._id;
+		}
+		http.put(`${cardsApiBase}/${type}cards/${id}`, changes).then(d => {
+			resolve(d);
+		}).catch(ex => reject(ex));
+	});
+}
+
+export function deleteCard(id, type) {
+	return new Promise(function (resolve, reject) {
+		const cardsApiBase = config.get('cardsApiBase');
+		http.delete(`${cardsApiBase}/${type}cards/${id}`).then(d => {
+			resolve(d);
+		}).catch(ex => reject(ex));
 	});
 }
 
 export default {
 	getWhiteCards,
 	getBlackCards,
-	submitCard
+	alterCard,
+	submitCard,
+	deleteCard
 };
