@@ -128,7 +128,7 @@ class Room extends Channel {
 	}
 
 	roomChange(lobbyOnly) {
-		if (lobbyOnly) {
+		if (!lobbyOnly) {
 			this.broadcast('$ROOM_CHANGED', this.getRoomInfo());
 		}
 		this.lobby.broadcast('$ROOM_CHANGED', this.getRoomShortInfo());
