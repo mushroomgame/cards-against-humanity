@@ -190,7 +190,7 @@ class Game {
 		this.pickedCards.set(-1, aiCards);
 
 		let data = [];
-		[...this.pickedCards.keys()].forEach(key => {
+		[...this.pickedCards.keys()].sort(() => Math.random() > 0.5 ? -1 : 1).forEach(key => {
 			let cards = this.pickedCards.get(key);
 			data.push({ uuid: key, cards });
 		});
