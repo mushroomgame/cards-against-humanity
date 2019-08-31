@@ -6,6 +6,8 @@ const config = require('config');
 
 const cardService = require('../services/cardService');
 
+let lastReload = null;
+
 class MessageHandler {
 	start() {
 		this.registerEvents();
@@ -27,8 +29,13 @@ class MessageHandler {
 	}
 
 	async onReloadCard(player) {
+		if(lastReload && new Date().getTime() - lastReload.getTime() < 10000){
+			player.send('$ALERT', { message: '刚刚更新完卡牌，请稍后重试' })
+			return;
+		}
+		lastReload = new Date();
 		await cardService.getDecks(true);
-		player.send('$ALERT', { message: '已重新读取卡牌，新卡牌仅在新开始的游戏生效！', type: 'info' })
+		player.send('$ALERT', { message: '已重新读取卡牌，新卡牌仅在新开始的游戏生效！', type: 'info' });
 	}
 
 	onPickWinner(player, { uuid }) {
