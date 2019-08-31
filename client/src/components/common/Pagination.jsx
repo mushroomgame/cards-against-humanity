@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 const Pagination = ({ currentPage, totalPages, onMoveToPage }) => {
 	let start = 0;
 	if (totalPages - currentPage <= 3) {
-		start = currentPage - (6 - (totalPages - currentPage));
+		start = Math.max(currentPage - (6 - (totalPages - currentPage)), 1);
 	} else {
 		start = Math.max(currentPage - 3, 1);
 	}

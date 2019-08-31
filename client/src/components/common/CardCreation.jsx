@@ -54,7 +54,7 @@ class CardCreation extends Component {
 		let tags = tagsRaw.split(',');
 		tags.push('#玩家自制');
 		tags.push('@' + global.nickname);
-		tags = [...new Set(tags)];
+		tags = [...new Set(tags)].filter(t => t);
 
 		const cards = texts.map(t => ({ text: t, type, tags }));
 		let completed = 0;
