@@ -10,6 +10,20 @@ async function getDecks(force) {
 		{ id: 1, name: '所有', white: whites.length, black: blacks.length }
 	];
 
+	const deckTexts = new Set();
+
+	blacks.forEach(b => {
+		let pack = b.tags && b.tags.find(t => t.startsWith('#'));
+		if (pack) {
+			deckTexts.add(pack.substr(1));
+		}
+	});
+
+	[...deckTexts].forEach(d => {
+		let deck = {id: decks.length + 1, name: d};
+		decks.push(deck);
+	});
+
 	cache.decks = decks;
 	return decks;
 }
@@ -21,6 +35,7 @@ async function getBlackCards(force) {
 		const result = await http.get(config.get('apiBase') + '/blackcards');
 		if (result.data) {
 			cache.blackCards = result.data.filter(c => c.status);
+			cache.blackCards.forEach(c => c.tags = JSON.parse(c.tags));
 			return cache.blackCards;
 		}
 	}
@@ -33,6 +48,7 @@ async function getWhiteCards(force) {
 		const result = await http.get(config.get('apiBase') + '/whitecards');
 		if (result.data) {
 			cache.whiteCards = result.data.filter(c => c.status);
+			cache.whiteCards.forEach(c => c.tags = JSON.parse(c.tags));
 			return cache.whiteCards;
 		}
 	}

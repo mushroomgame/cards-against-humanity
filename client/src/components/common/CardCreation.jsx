@@ -6,7 +6,7 @@ import { submitCard } from '../../services/cardService';
 import global from '../../services/global';
 
 let data = [
-	{ name: 'type', type: 'radio', label: '卡牌类型', data: [{ name: '黑卡', value: 'black' }, { name: '白卡', value: 'white' }], value: 'black' },
+	{ name: 'type', type: 'radio', label: '卡牌类型', data: [{ name: '自动', value: 'auto' }, { name: '黑卡', value: 'black' }, { name: '白卡', value: 'white' }], value: 'auto' },
 	{ name: 'text', type: 'textarea', label: '卡牌内容', value: '' },
 	{ name: 'tags', type: 'tags', label: '卡牌标签', placeholder: '非必填，多个标签请用半角逗号隔开，例：A岛,网络用语', value: '' }
 ];
@@ -42,21 +42,30 @@ class CardCreation extends Component {
 
 		const texts = [...new Set(textRaw.split('\n').map(t => t.trim()))];
 
-		for (let t of texts) {
-			let result = this.validateCard(type, t);
-			console.log(result);
-			if (!result.valid) {
-				alerter.alert(result.message);
-				return;
-			}
-		}
-
 		let tags = tagsRaw.split(',');
 		tags.push('#玩家自制');
 		tags.push('@' + global.nickname);
 		tags = [...new Set(tags)].filter(t => t);
 
-		const cards = texts.map(t => ({ text: t, type, tags }));
+		let cards;
+		if (type !== 'auto') {
+			for (let t of texts) {
+				let result = this.validateCard(type, t);
+				console.log(result);
+				if (!result.valid) {
+					alerter.alert(result.message);
+					return;
+				}
+			}
+			cards = texts.map(t => ({ text: t, type, tags }));
+		} else {
+			cards = texts.map(t => {
+				let blanks = t.split('_').length - 1;
+				let type = blanks > 0 ? 'black' : 'white';
+				return { text: t, type, tags };
+			});
+		}
+
 		let completed = 0;
 		this.setState({ total: cards.length, completed, submitting: true });
 		for (let card of cards) {
