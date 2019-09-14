@@ -15,6 +15,7 @@ import WhiteCard from './room/WhiteCard';
 
 export default class Room extends Component {
 	state = {
+		onRoleChange: false,
 		whiteCards: [],
 		blackCard: null,
 		blanks: 0,
@@ -172,6 +173,7 @@ export default class Room extends Component {
 
 	onSomeoneLeave(player) {
 		this.setState({ players: this.state.players.filter(p => p.uuid !== player.uuid) });
+		if (player.uuid == global.uuid) this.setState({ onRoleChange: false });
 	}
 
 	onHostChange({ uuid }) {
@@ -188,7 +190,11 @@ export default class Room extends Component {
 		const players = [...this.state.players];
 		const spectators = [...this.state.spectators].filter(p => p.uuid !== player.uuid);
 		players.push(player);
-		this.setState({ players, spectators });
+		if (player.uuid === global.uuid) {
+			this.setState({ players, spectators, onRoleChange: false });
+		} else {
+			this.setState({ players, spectators });
+		}
 	}
 
 	onSpectate(player) {
@@ -200,7 +206,7 @@ export default class Room extends Component {
 		const spectators = [...this.state.spectators];
 		spectators.push(player);
 		if (player.uuid === global.uuid) {
-			this.setState({ players, spectators, whiteCards: [] });
+			this.setState({ players, spectators, whiteCards: [], onRoleChange: false });
 		} else {
 			this.setState({ players, spectators });
 		}
@@ -241,8 +247,10 @@ export default class Room extends Component {
 	}
 
 	onClickExit = () => {
+		if (this.state.onRoleChange) return;
 		whevent.call('LOADING', '载入中...');
 		server.send('$LOBBY');
+		this.setState({onRoleChange: true});
 	}
 
 	onClickStartGame = () => {
@@ -264,14 +272,17 @@ export default class Room extends Component {
 	}
 
 	onClickSpectate = () => {
+		if (this.state.onRoleChange) return;
 		if (this.isMeSpectating()) {
 			if (this.state.players.length >= 8) {
 				alerter.alert('玩家已满，无法加入！');
 			} else {
 				server.send('$JOIN');
+				this.setState({onRoleChange: true});
 			}
 		} else {
 			server.send('$SPECTATE');
+			this.setState({onRoleChange: true});
 		}
 	}
 
