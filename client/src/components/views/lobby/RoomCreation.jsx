@@ -36,6 +36,8 @@ class RoomCreation extends Component {
 	onGetDecks(decks) {
 		if (this.state.initialized) return;
 		whevent.call('LOADING');
+
+		//TODO: Add Custom Tags
 		let whiteDecks = {
 			name: 'whiteDecks',
 			type: 'checkboxes',
@@ -43,7 +45,8 @@ class RoomCreation extends Component {
 			value: decks.map(d => ({
 				id: d.id,
 				name: d.name,
-				checked: true
+				checked: false,
+				count: d.count
 			}))
 		};
 
@@ -54,7 +57,8 @@ class RoomCreation extends Component {
 			value: decks.map(d => ({
 				id: d.id,
 				name: d.name,
-				checked: true
+				checked: false,
+				count: d.count
 			}))
 		};
 		data.push(whiteDecks, blackDecks);

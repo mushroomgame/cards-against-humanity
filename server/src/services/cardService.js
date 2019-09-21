@@ -3,6 +3,7 @@ const config = require('config');
 const http = require('../core/http');
 
 async function getDecks(force) {
+	//TODO: Update API /api/decks/[white,black]
 	const blacks = await getBlackCards(force);
 	const whites = await getWhiteCards(force);
 

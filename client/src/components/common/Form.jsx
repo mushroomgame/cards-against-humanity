@@ -33,7 +33,7 @@ export default class Form extends Component {
 							v.checked = !v.checked;
 							this.onChange(name, newValue);
 						}} />
-						<label className="Form-Item-Input Form-Item-Input_Checkbox" htmlFor={`${name}_${c.id}`}>{c.name}</label>
+						<label className="Form-Item-Input Form-Item-Input_Checkbox" htmlFor={`${name}_${c.id}`}>{c.name}{c.count ? <span className="Counter">{c.count}</span> : ''}</label>
 					</div>
 				)}</div>;
 			case 'radio':
